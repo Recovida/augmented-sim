@@ -3,10 +3,8 @@
 import argparse
 import dbfread
 import datetime
-import sys
 
 from dateutil.relativedelta import relativedelta
-
 
 
 class SIMFieldParser(dbfread.FieldParser):
@@ -17,13 +15,13 @@ class SIMFieldParser(dbfread.FieldParser):
                 year = int(data[4:])
                 month = int(data[2:4])
                 day = int(data[:2])
-            except:
+            except (TypeError, ValueError):
                 return dbfread.InvalidValue(data)
             return datetime.date(year, month, day)
         if field.name == 'IDADE' and field.length == 3:
             try:
                 unit, value = int(data[:1]), int(data[1:])
-            except:
+            except (TypeError, ValueError):
                 return dbfread.InvalidValue(data)
             if unit == 5:
                 unit, value = 4, value + 100
@@ -32,19 +30,6 @@ class SIMFieldParser(dbfread.FieldParser):
                 return relativedelta(**{args[unit]: value})
             return dbfread.InvalidValue(data)
         return super().parseC(field, data)
-
-
-class SIMCauseEntry:
-
-    def __init__(self):
-        pass
-
-    @classmethod
-    def from_dbf_row(cls, linha):
-        return None
-
-
-
 
 
 def main():
@@ -63,6 +48,7 @@ def main():
                 print(row)
                 if n >= 20:
                     break
+
 
 if __name__ == '__main__':
     main()
