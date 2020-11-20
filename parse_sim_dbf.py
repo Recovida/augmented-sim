@@ -45,9 +45,10 @@ def main():
         with dbfread.DBF(f.name, parserclass=SIMFieldParser) as dbf:
             for row in dbf:
                 n += 1
-                print(row)
-                if n >= 20:
-                    break
+                print('\n' + 70 * '-' + '\n' + 'Linha', n)
+                for k, v in row.items():
+                    print('%20s = %s' % (k, v))
+                input('[Press ENTER to continue]')
 
 
 if __name__ == '__main__':
