@@ -5,7 +5,6 @@ import bisect
 import csv
 import dbfread
 import datetime
-import re
 
 from dateutil.relativedelta import relativedelta
 
@@ -91,8 +90,33 @@ neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
 
 
 def neighbourhood_income(neighbourhood):
-    income_id = neighbourhood_income_table.get(int(neighbourhood), -1)
+    try:
+        neighbourhood = int(neighbourhood)
+    except (TypeError, ValueError):
+        return ''
+    income_id = neighbourhood_income_table.get(neighbourhood, -1)
     return neighbourhood_income_names.get(income_id, '')
+
+
+# --------- ICD
+
+def icd_chapter(icd):
+    invalid = '**'
+    if icd is None:
+        return invalid
+    icd = icd.upper()[:3]
+    if not (len(icd) == 3 and 'A' <= icd[0] <= 'Z' and icd[1:].isnumeric()):
+        return invalid
+    beg = ['A00', 'C00', 'D50', 'E00', 'F00', 'G00', 'H00', 'H60', 'I00',
+           'J00', 'K00', 'L00', 'M00', 'N00', 'O00', 'P00', 'Q00', 'R00',
+           'S00', 'V01', 'Z00']
+    end = ['B99', 'D48', 'D89', 'E90', 'F99', 'G99', 'H59', 'H95', 'I99',
+           'J99', 'K93', 'L99', 'M99', 'N99', 'O99', 'P96', 'Q99', 'R99',
+           'T98', 'Y98', 'Z99']
+    idx = bisect.bisect(beg, icd)
+    if idx <= 0 or icd > end[idx - 1]:
+        return invalid
+    return idx
 
 
 # --------- main function
@@ -120,9 +144,16 @@ def main():
         'SEMANAEPI',      # epidemiological week (1..53)
         'AREARENDA',      # neighbourhood income (ALTA/INTERMEDIARIA/BAIXA)
         'DISTRITOSAUDE',  # ?
-        'CAPCID',         # ?
         'CAUSAESP',       # ?
-    ] + cols[1:2] + ['IDADEGERAL', 'IDADECAT1', 'IDADECAT2'] + cols[2:]
+    ] + cols[1:2] + [
+        'IDADEGERAL',     # age in years (0 if < 1 year old)
+        'IDADECAT1',      # ?
+        'IDADECAT2'       # age category (1..8)
+    ] + cols[2:] + [
+        'CAPCID',         # ICD chapter (integer)
+        'COVID',          # ?
+        'CIDBR',          # ?
+    ]
     with open(a.output_file.name, 'w') as fd:
         writer = csv.DictWriter(fd, cols, delimiter=',',
                                 quoting=csv.QUOTE_NONNUMERIC)
@@ -145,8 +176,9 @@ def main():
                 row['IDADECAT1'] = age_category1(age.years)
                 row['IDADECAT2'] = age_category2(age.years)
             # add neighbourhood income column
-            if row['CODBAIRES']:
-                row['AREARENDA'] = neighbourhood_income(row['CODBAIRES'])
+            row['AREARENDA'] = neighbourhood_income(row['CODBAIRES'])
+            # ICD chapter
+            row['CAPCID'] = icd_chapter(row['CAUSABAS'])
             # finally, write to the CSV file
             writer.writerow(row)
 
