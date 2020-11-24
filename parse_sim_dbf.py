@@ -107,12 +107,12 @@ def main():
         all_rows = [row for row in reader]
         cols = reader.field_names
     cols = cols[:1] + [
-        'DIA',            # 1..31
-        'MES',            # 1..12
-        'ANO',            # YYYY
-        'ANOEPI',         # year of the epidemiological week
+        'DIA',            # day of the month (1..31)
+        'MES',            # month (1..12)
+        'ANO',            # year (YYYY)
+        'ANOEPI',         # year of the epidemiological week (YYYY)
         'SEMANAEPI',      # epidemiological week (1..53)
-        'AREARENDA',      # ?
+        'AREARENDA',      # neighbourhood income (ALTA/INTERMEDIARIA/BAIXA)
         'DISTRITOSAUDE',  # ?
         'CAPCID',         # ?
         'CAUSAESP',       # ?
