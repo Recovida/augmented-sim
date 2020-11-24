@@ -142,7 +142,7 @@ def main():
             age = parse_age(row['IDADE'])
             if age is not None:
                 row['IDADEGERAL'] = age.years
-                row['IDADEGERAL'] = ''
+                row['IDADECAT1'] = age_category1(age.years)
                 row['IDADECAT2'] = age_category2(age.years)
             # add neighbourhood income column
             if row['CODBAIRES']:
