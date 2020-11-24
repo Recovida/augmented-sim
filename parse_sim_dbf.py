@@ -4,6 +4,7 @@ import argparse
 import csv
 import dbfread
 import datetime
+import re
 
 from dateutil.relativedelta import relativedelta
 
@@ -57,6 +58,38 @@ def epidemiological_week(date):
     return (year, 1 + ((date - first_epi_week_start).days) // 7)
 
 
+NEIGHBOURHOOD_INCOME_STR = '''
+(11=3) (12=1) (13=3) (17=3) (18=2) (19=3) (28=3) (29=2) (33=1) (34=1) (36=3)
+(37=2) (38=3) (44=1) (45=3) (46=2) (47=3) (50=2) (51=1) (52=3) (56=3) (57=2)
+(60=2) (61=1) (62=3) (63=1) (67=1) (79=1) (80=2) (83=3) (84=1) (85=2) (86=3)
+(89=3) (90=1) (91=2) (92=1) (96=1) (1thru2=1) (3thru5=2) (6thru8=1)
+(9thru10=2) (14thru16=1) (20thru21=2) (22thru25=3) (26thru27=1)
+(30thru32=3) (39thru40=2) (41thru43=3) (48thru49=1) (53thru55=1)
+(58thru59=3) (64thru66=2) (68thru69=2) (70thru72=1) (73thru74=2)
+(74thru78=3) (81thru82=1) (87thru88=2) (93thru95=2)
+'''
+NEIGHBOURHOOD_INCOME_TABLE = {}
+INCOME_VALUES = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
+
+
+def fill_neighbourhood_income():
+    single_pattern = re.compile(r'\((?P<n>\d+)=(?P<inc>\d)\)')
+    range_pattern = re.compile(r'\((?P<n1>\d+)thru(?P<n2>\d+)=(?P<inc>\d)\)')
+    for item in NEIGHBOURHOOD_INCOME_STR.strip().replace('\n', ' ').split(' '):
+        if (m := single_pattern.match(item)):
+            n = int(m.group('n'))
+            inc = INCOME_VALUES.get(int(m.group('inc')), '')
+            NEIGHBOURHOOD_INCOME_TABLE[n] = inc
+        elif (m := range_pattern.match(item)):
+            inc = INCOME_VALUES.get(int(m.group('inc')), '')
+            n1 = n = int(m.group('n1'))
+            n2 = n = int(m.group('n2'))
+            for n in range(n1, n2 + 1):
+                NEIGHBOURHOOD_INCOME_TABLE[n] = inc
+
+
+fill_neighbourhood_income()
+
 
 def main():
     desc = '''
@@ -103,6 +136,11 @@ def main():
             age = parse_age(row['IDADE'])
             if age is not None:
                 row['IDADEANOS'] = age.years
+            # add neighbourhood income column
+            if row['CODBAIRES']:
+                neighbourhood = int(row['CODBAIRES'])
+                income = NEIGHBOURHOOD_INCOME_TABLE.get(neighbourhood, '')
+                row['AREARENDA'] = income
             # finally, write to the CSV file
             writer.writerow(row)
 
