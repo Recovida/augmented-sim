@@ -42,7 +42,7 @@ def age_category1(age):
 
 
 def age_category2(age):
-    return bisect([0, 5, 20, 40, 60, 70, 80, 90], age)
+    return bisect.bisect([0, 5, 20, 40, 60, 70, 80, 90], age)
 
 
 # --------- Epidemiological week
@@ -75,37 +75,24 @@ def epidemiological_week(date):
 
 # --------- Neighbourhood income
 
-NEIGHBOURHOOD_INCOME_STR = '''
-(11=3) (12=1) (13=3) (17=3) (18=2) (19=3) (28=3) (29=2) (33=1) (34=1) (36=3)
-(37=2) (38=3) (44=1) (45=3) (46=2) (47=3) (50=2) (51=1) (52=3) (56=3) (57=2)
-(60=2) (61=1) (62=3) (63=1) (67=1) (79=1) (80=2) (83=3) (84=1) (85=2) (86=3)
-(89=3) (90=1) (91=2) (92=1) (96=1) (1thru2=1) (3thru5=2) (6thru8=1)
-(9thru10=2) (14thru16=1) (20thru21=2) (22thru25=3) (26thru27=1)
-(30thru32=3) (39thru40=2) (41thru43=3) (48thru49=1) (53thru55=1)
-(58thru59=3) (64thru66=2) (68thru69=2) (70thru72=1) (73thru74=2)
-(74thru78=3) (81thru82=1) (87thru88=2) (93thru95=2)
-'''
-NEIGHBOURHOOD_INCOME_TABLE = {}
-INCOME_VALUES = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
+neighbourhood_income_table = {
+    1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 6: 1, 7: 1, 8: 1, 9: 2,
+    10: 2, 11: 3, 12: 1, 13: 3, 14: 1, 15: 1, 16: 1, 17: 3, 18: 2, 19: 3,
+    20: 2, 21: 2, 22: 3, 23: 3, 24: 3, 25: 3, 26: 1, 27: 1, 28: 3, 29: 2,
+    30: 3, 31: 3, 32: 3, 33: 1, 34: 1, 36: 3, 37: 2, 38: 3, 39: 2,
+    40: 2, 41: 3, 42: 3, 43: 3, 44: 1, 45: 3, 46: 2, 47: 3, 48: 1, 49: 1,
+    50: 2, 51: 1, 52: 3, 53: 1, 54: 1, 55: 1, 56: 3, 57: 2, 58: 3, 59: 3,
+    60: 2, 61: 1, 62: 3, 63: 1, 64: 2, 65: 2, 66: 2, 67: 1, 68: 2, 69: 2,
+    70: 1, 71: 1, 72: 1, 73: 2, 74: 3, 75: 3, 76: 3, 77: 3, 78: 3, 79: 1,
+    80: 2, 81: 1, 82: 1, 83: 3, 84: 1, 85: 2, 86: 3, 87: 2, 88: 2, 89: 3,
+    90: 1, 91: 2, 92: 1, 93: 2, 94: 2, 95: 2, 96: 1
+}
+neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
 
 
-def fill_neighbourhood_income():
-    single_pattern = re.compile(r'\((?P<n>\d+)=(?P<inc>\d)\)')
-    range_pattern = re.compile(r'\((?P<n1>\d+)thru(?P<n2>\d+)=(?P<inc>\d)\)')
-    for item in NEIGHBOURHOOD_INCOME_STR.strip().replace('\n', ' ').split(' '):
-        if (m := single_pattern.match(item)):
-            n = int(m.group('n'))
-            inc = INCOME_VALUES.get(int(m.group('inc')), '')
-            NEIGHBOURHOOD_INCOME_TABLE[n] = inc
-        elif (m := range_pattern.match(item)):
-            inc = INCOME_VALUES.get(int(m.group('inc')), '')
-            n1 = n = int(m.group('n1'))
-            n2 = n = int(m.group('n2'))
-            for n in range(n1, n2 + 1):
-                NEIGHBOURHOOD_INCOME_TABLE[n] = inc
-
-
-fill_neighbourhood_income()
+def neighbourhood_income(neighbourhood):
+    income_id = neighbourhood_income_table.get(int(neighbourhood), -1)
+    return neighbourhood_income_names.get(income_id, '')
 
 
 # --------- main function
@@ -159,9 +146,7 @@ def main():
                 row['IDADECAT2'] = age_category2(age.years)
             # add neighbourhood income column
             if row['CODBAIRES']:
-                neighbourhood = int(row['CODBAIRES'])
-                income = NEIGHBOURHOOD_INCOME_TABLE.get(neighbourhood, '')
-                row['AREARENDA'] = income
+                row['AREARENDA'] = neighbourhood_income(row['CODBAIRES'])
             # finally, write to the CSV file
             writer.writerow(row)
 
