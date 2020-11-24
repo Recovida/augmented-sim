@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import bisect
 import csv
 import dbfread
 import datetime
@@ -8,6 +9,8 @@ import re
 
 from dateutil.relativedelta import relativedelta
 
+
+# --------- Date
 
 def parse_date(d):
     try:
@@ -18,6 +21,8 @@ def parse_date(d):
         return None
     return datetime.date(year, month, day)
 
+
+# --------- Age
 
 def parse_age(d):
     try:
@@ -31,6 +36,16 @@ def parse_age(d):
         return relativedelta(**{args[unit]: value})
     return None
 
+
+def age_category1(age):
+    return 0
+
+
+def age_category2(age):
+    return bisect([0, 5, 20, 40, 60, 70, 80, 90], age)
+
+
+# --------- Epidemiological week
 
 FIRST_EPIDEMIOLOGICAL_WEEK_CACHE = {}
 
@@ -57,6 +72,8 @@ def epidemiological_week(date):
         first_epi_week_start = first_epi_week_start_in_year(year)
     return (year, 1 + ((date - first_epi_week_start).days) // 7)
 
+
+# --------- Neighbourhood income
 
 NEIGHBOURHOOD_INCOME_STR = '''
 (11=3) (12=1) (13=3) (17=3) (18=2) (19=3) (28=3) (29=2) (33=1) (34=1) (36=3)
@@ -91,6 +108,8 @@ def fill_neighbourhood_income():
 fill_neighbourhood_income()
 
 
+# --------- main function
+
 def main():
     desc = '''
     This script reads a DBF file containing death causes encoded
@@ -116,7 +135,7 @@ def main():
         'DISTRITOSAUDE',  # ?
         'CAPCID',         # ?
         'CAUSAESP',       # ?
-    ] + cols[1:2] + ['IDADEANOS'] + cols[2:]
+    ] + cols[1:2] + ['IDADEGERAL', 'IDADECAT1', 'IDADECAT2'] + cols[2:]
     with open(a.output_file.name, 'w') as fd:
         writer = csv.DictWriter(fd, cols, delimiter=',',
                                 quoting=csv.QUOTE_NONNUMERIC)
@@ -135,7 +154,9 @@ def main():
             # parse age and add columns with the extracted data
             age = parse_age(row['IDADE'])
             if age is not None:
-                row['IDADEANOS'] = age.years
+                row['IDADEGERAL'] = age.years
+                row['IDADEGERAL'] = ''
+                row['IDADECAT2'] = age_category2(age.years)
             # add neighbourhood income column
             if row['CODBAIRES']:
                 neighbourhood = int(row['CODBAIRES'])
