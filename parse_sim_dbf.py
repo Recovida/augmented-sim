@@ -119,6 +119,20 @@ def icd_chapter(icd):
     return idx
 
 
+def covid(icd):
+    invalid, yes, suspected, no = 0, 1, 2, ''
+    if icd is None:
+        return invalid
+    icd = icd.upper()
+    if not (len(icd) >= 3 and 'A' <= icd[0] <= 'Z' and icd[1:].isnumeric()):
+        return invalid
+    if icd.startswith('B342'):
+        return yes
+    if icd.startswith('U04'):
+        return suspected
+    return no
+
+
 # --------- main function
 
 def main():
@@ -151,7 +165,7 @@ def main():
         'IDADECAT2'       # age category (1..8)
     ] + cols[2:] + [
         'CAPCID',         # ICD chapter (integer)
-        'COVID',          # ?
+        'COVID',          # 0=unknown, 1=yes, 2=suspected
         'CIDBR',          # ?
     ]
     with open(a.output_file.name, 'w') as fd:
@@ -159,6 +173,7 @@ def main():
                                 quoting=csv.QUOTE_NONNUMERIC)
         writer.writeheader()
         for row in all_rows:
+
             # parse date and add columns with the extracted data
             date = parse_date(row['DTOBITO'])
             epi_year, epi_week = epidemiological_week(date)
@@ -169,16 +184,21 @@ def main():
                 'ANOEPI': epi_year,
                 'SEMANAEPI': epi_week,
             })
+
             # parse age and add columns with the extracted data
             age = parse_age(row['IDADE'])
             if age is not None:
                 row['IDADEGERAL'] = age.years
                 row['IDADECAT1'] = age_category1(age.years)
                 row['IDADECAT2'] = age_category2(age.years)
+
             # add neighbourhood income column
             row['AREARENDA'] = neighbourhood_income(row['CODBAIRES'])
-            # ICD chapter
+
+            # data obtained from ICD column
             row['CAPCID'] = icd_chapter(row['CAUSABAS'])
+            row['COVID'] = covid(row['CAUSABAS'])
+
             # finally, write to the CSV file
             writer.writerow(row)
 
