@@ -66,7 +66,7 @@ def first_epi_week_start_in_year(year):
 def epidemiological_week(date):
     year = date.year + 1
     first_epi_week_start = first_epi_week_start_in_year(year)
-    while date < first_epi_week_start:  # this runs at most twice
+    while date < first_epi_week_start:  # this runs at most three times
         year -= 1
         first_epi_week_start = first_epi_week_start_in_year(year)
     return (year, 1 + ((date - first_epi_week_start).days) // 7)
