@@ -134,6 +134,8 @@ def covid(icd):
         return yes
     if icd.startswith('U04'):
         return suspected
+    if icd.startswith('U99'):
+        return invalid
     return no
 
 
@@ -243,10 +245,10 @@ def cidbr_short_label(cidbr):
         '075': 'PNEUMONIA',
         '076': 'DPOCASMA',
         '104': 'ACTRANS',
-        '105': 'ACTRANS',
-        '106': 'ACTRANS',
-        '107': 'ACTRANS',
-        '108': 'ACTRANS',
+        '105': 'QUEDAFOGINT',
+        '106': 'QUEDAFOGINT',
+        '107': 'QUEDAFOGINT',
+        '108': 'QUEDAFOGINT',
         '109': 'SUIC',
         '110': 'HOMIC',
         '111': 'EXTIND',
@@ -282,14 +284,15 @@ def main():
         'ANO',            # year (YYYY)
         'ANOEPI',         # year of the epidemiological week (YYYY)
         'SEMANAEPI',      # epidemiological week (1..53)
-        'AREARENDA',      # neighbourhood income (ALTA/INTERMEDIARIA/BAIXA)
         #  'DISTRITOSAUDE',  # ?
         #  'CAUSAESP',       # ?
     ] + cols[1:2] + [
         'IDADEGERAL',     # age in years (0 if < 1 year old)
         'IDADECAT1',      # ?
         'IDADECAT2'       # age category (1..8)
-    ] + cols[2:] + [
+    ] + cols[2:5] + [
+        'AREARENDA',      # neighbourhood income (ALTA/INTERMEDIARIA/BAIXA)
+    ] + cols[5:] + [
         'CAPCID',         # ICD chapter (integer)
         'COVID',          # 0=unknown, 1=yes, 2=suspected
         'CIDBR',          # CID-BR code (usually an integer)
