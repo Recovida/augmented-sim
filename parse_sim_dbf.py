@@ -228,14 +228,14 @@ def icd_to_cidbr(icd):
     return invalid
 
 
-def cidbr_short_label(cidbr):
+def cidbr_conditions(cidbr):
     if not cidbr:
-        return ''
+        return {}
     cidbr_int = int(cidbr[:3])
     if 88 <= cidbr_int <= 92:
-        return cidbr + ' GPP' + str(cidbr_int - 87)
+        return {'GPP': cidbr_int - 87}
     if 93 <= cidbr_int <= 97:
-        return cidbr + ' PERI' + str(cidbr_int - 92)
+        return {'PERI': cidbr_int - 92}
     named = {
         '068': 'DCOR',
         '069': 'OUTCOR',
@@ -257,8 +257,8 @@ def cidbr_short_label(cidbr):
     }
     for pfx, name in named.items():
         if cidbr.startswith(pfx):
-            return name
-    return ''
+            return {name: 1}
+    return {}
 
 
 # --------- main function
@@ -296,7 +296,21 @@ def main():
         'CAPCID',         # ICD chapter (integer)
         'COVID',          # 0=unknown, 1=yes, 2=suspected
         'CIDBR',          # CID-BR code (usually an integer)
-        'CIDBRDESC',      # CID-BR short name (only for a few cases)
+        'DCOR',           # heart diseases (0/1)
+        'OUTCOR',         # other heart diseases (0/1)
+        'AVC',            # CVA [stroke] (0/1)
+        'GRIPE',          # flu (0/1)
+        'PNEUMONIA',      # pneumonia (0/1)
+        'DPOCASMA',       # COPD or asthma (0/1)
+        'GPP',            # pregnancy, childbirth and the puerperium (0..5)
+        'PERI',           # perinatal conditions (0..5)
+        'ACTRANS',        # transport accidents (0/1)
+        'QUEDAFOGINT',    # fall, drowning or poisoning (0/1)
+        'SUIC',           # suicide (0/1)
+        'HOMIC',          # homicide (0/1)
+        'EXTIND',         # event of undetermined intent (0/1)
+        'INTLEG',         # legal intervention and operations of war (0/1)
+        'OUTEXT'          # other external causes (0/1)
     ]
     with open(a.output_file.name, 'w') as fd:
         writer = csv.DictWriter(fd, cols, delimiter=',',
@@ -330,7 +344,14 @@ def main():
             row['COVID'] = covid(row['CAUSABAS'])
             cidbr = icd_to_cidbr(row['CAUSABAS'])
             row['CIDBR'] = cidbr
-            row['CIDBRDESC'] = cidbr_short_label(cidbr)
+            if cidbr:
+                conditions = {cond: 0 for cond in [
+                    'DCOR', 'OUTCOR', 'AVC', 'GRIPE', 'PNEUMONIA', 'DPOCASMA',
+                    'GPP', 'PERI', 'ACTRANS', 'QUEDAFOGINT', 'SUIC', 'HOMIC',
+                    'EXTIND', 'INTLEG', 'OUTEXT'
+                ]}
+                conditions.update(cidbr_conditions(cidbr))
+                row.update(conditions)
 
             # finally, write to the CSV file
             writer.writerow(row)
