@@ -7,11 +7,12 @@ import dbfread
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from typing import Optional, Tuple, Union, Dict
 
 
 # --------- Date
 
-def parse_date(d):
+def parse_date(d: str) -> Optional[datetime.date]:
     try:
         year = int(d[4:])
         month = int(d[2:4])
@@ -23,7 +24,7 @@ def parse_date(d):
 
 # --------- Age
 
-def parse_age(d):
+def parse_age(d: str) -> Optional[relativedelta]:
     try:
         unit, value = int(d[:1]), int(d[1:])
     except (TypeError, ValueError):
@@ -36,11 +37,11 @@ def parse_age(d):
     return None
 
 
-def age_category1(age):
+def age_category1(age: int) -> int:
     return 0
 
 
-def age_category2(age):
+def age_category2(age: int) -> int:
     return bisect.bisect([0, 5, 20, 40, 60, 70, 80, 90], age)
 
 
@@ -49,7 +50,7 @@ def age_category2(age):
 FIRST_EPIDEMIOLOGICAL_WEEK_CACHE = {}
 
 
-def first_epi_week_start_in_year(year):
+def first_epi_week_start_in_year(year: int) -> datetime.date:
     if year in FIRST_EPIDEMIOLOGICAL_WEEK_CACHE:
         return FIRST_EPIDEMIOLOGICAL_WEEK_CACHE[year]
     first_day_in_year = datetime.date(year, 1, 1)
@@ -63,7 +64,7 @@ def first_epi_week_start_in_year(year):
     return start
 
 
-def epidemiological_week(date):
+def epidemiological_week(date: datetime.date) -> Tuple[int, int]:
     year = date.year + 1
     first_epi_week_start = first_epi_week_start_in_year(year)
     while date < first_epi_week_start:  # this runs at most three times
@@ -89,7 +90,7 @@ neighbourhood_income_table = {
 neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
 
 
-def neighbourhood_income(neighbourhood):
+def neighbourhood_income(neighbourhood: str) -> str:
     try:
         neighbourhood = int(neighbourhood)
     except (TypeError, ValueError):
@@ -100,7 +101,7 @@ def neighbourhood_income(neighbourhood):
 
 # --------- ICD
 
-def icd_chapter(icd):
+def icd_chapter(icd: str) -> Union[str, int]:
     invalid = '**'
     if icd is None:
         return invalid
@@ -123,7 +124,7 @@ def icd_chapter(icd):
     return idx
 
 
-def covid(icd):
+def covid(icd: str) -> Union[str, int]:
     invalid, yes, suspected, no = 0, 1, 2, ''
     if icd is None:
         return invalid
@@ -212,7 +213,7 @@ CIDBR_LEVELS[2]['values'] = [
 ]
 
 
-def icd_to_cidbr(icd):
+def icd_to_cidbr(icd: str) -> str:
     invalid = ''
     if icd is None:
         return invalid
@@ -228,7 +229,7 @@ def icd_to_cidbr(icd):
     return invalid
 
 
-def cidbr_conditions(cidbr):
+def cidbr_conditions(cidbr: str) -> Dict[str, int]:
     if not cidbr:
         return {}
     cidbr_int = int(cidbr[:3])
