@@ -59,7 +59,9 @@ class AugmentedSIMGUI(QObject):
             )
         aug = self.augment_cls(input_file, output_file)
         try:
+            self.ui.btn_execute.setEnabled(False)
             self.ui.label_msg.setText('Executando operação…')
+            self.ui.label_msg.repaint()
             aug.augment()
         except Exception:
             import traceback
@@ -68,6 +70,7 @@ class AugmentedSIMGUI(QObject):
             )
         else:
             self.ui.label_msg.setText('O arquivo foi salvo.')
+        self.ui.btn_execute.setEnabled(True)
 
 
 if __name__ == '__main__':
