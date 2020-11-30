@@ -77,7 +77,7 @@ class SIMRowParser:
     @classmethod
     def parse_int(cls, value: str) -> Optional[int]:
         try:
-            return int(str)
+            return int(value)
         except Exception:
             return None
 
