@@ -75,11 +75,18 @@ class SIMRowParser:
         return icd
 
     @classmethod
+    def parse_int(cls, value: str) -> Optional[int]:
+        try:
+            return int(str)
+        except Exception:
+            return None
+
+    @classmethod
     def parse_row(cls, row):
         converters = {
             'DTOBITO': cls.parse_date,
             'IDADE': cls.parse_age,
-            'CODBAIRES': int,
+            'CODBAIRES': cls.parse_int,
             'CAUSABAS': cls.parse_icd
         }
         return {k: converters.get(k, lambda x: x)(v) for k, v in row.items()}
