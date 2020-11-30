@@ -13,29 +13,31 @@ from typing import Optional, Tuple, Union, Dict
 class TableParser:
     '''Reads a DBF or CSV table.'''
 
-    def __init__(self, file_name: str):
-        self.file_name = file_name
-        if file_name.lower().endswith('.csv'):
-            self.format = 'CSV'
-            self.fd = open(file_name, 'r', encoding='utf-8-sig')
-            dialect = csv.Sniffer().sniff(self.fd.read(1024))
-            self.fd.seek(0)
-            self.parser = csv.DictReader(self.fd, dialect=dialect)
-            self.columns = self.parser.fieldnames[:]
-        elif file_name.lower().endswith('.dbf'):
-            self.format = 'DBF'
-            self.parser = dbfread.DBF(file_name)
-            self.columns = self.parser.field_names[:]
-        else:
-            raise Exception('Formato não suportado.')
+    def __init__(self, file_names: str):
+        self.files = []
+        self.columns = []
+        for file_name in file_names:
+            if file_name.lower().endswith('.csv'):
+                format = 'CSV'
+                fd = open(file_name, 'r', encoding='utf-8-sig')
+                dialect = csv.Sniffer().sniff(fd.read(1024))
+                fd.seek(0)
+                parser = csv.DictReader(fd, dialect=dialect)
+                columns = parser.fieldnames
+            elif file_name.lower().endswith('.dbf'):
+                format = 'DBF'
+                parser = dbfread.DBF(file_name)
+                columns = parser.field_names[:]
+            else:
+                raise Exception('Formato não suportado.')
+            self.files.append((file_name, format, parser, columns))
+            for column in columns:
+                if column not in self.columns:
+                    self.columns.append(column)
 
     def parse(self):
-        if self.format == 'CSV':
-            for row in self.parser:
-                yield row
-            self.fd.close()
-        elif self.format == 'DBF':
-            for row in self.parser:
+        for file_name, format, parser, columns in self.files:
+            for row in parser:
                 yield row
 
 
@@ -219,6 +221,7 @@ class DeathCauseAugmenter(Augmenter):
 
     REQUIRES = ['CAUSABAS']
     PRODUCES = [
+        'GARBAGECODE',  # garbage code (0..4)
         'CAPCID',       # ICD chapter (integer)
         'COVID',        # COVID-19 (0=missing/no, 1=yes, 2=suspected)
         'CIDBR',        # CID-BR code (usually an integer)
@@ -325,6 +328,127 @@ class DeathCauseAugmenter(Augmenter):
     INVALID_ICD_CHAPTER = '**'
     INVALID_COVID = 0
 
+    GARBAGE_CODE_LEVELS = {1: {}, 2: {}, 3: {}, 4: {}}
+    GARBAGE_CODE_LEVELS[1]['begin'] = [
+        'A40', 'A480', 'A483', 'A490', 'A59', 'A71', 'A740', 'B07', 'B30',
+        'B35', 'B85', 'B87', 'B940', 'D50', 'D509', 'D62', 'D638', 'D641',
+        'D648', 'D68', 'D699', 'E15', 'E16', 'E50', 'E641', 'E853', 'E878',
+        'F062', 'F072', 'F09', 'F17', 'F20', 'F25', 'F51', 'G06', 'G32',
+        'G43', 'G444', 'G47', 'G474', 'G50', 'G62', 'G80', 'G89', 'G91',
+        'G914', 'G931', 'G934', 'G99', 'H052', 'H71', 'I26', 'I312', 'I46',
+        'I50', 'I517', 'I674', 'I76', 'I95', 'I958', 'J69', 'J80', 'J85',
+        'J86', 'J93', 'J938', 'J942', 'J96', 'J981', 'K00', 'K30', 'K65',
+        'K669', 'K71', 'K718', 'K750', 'L20', 'L40', 'L52', 'L56', 'L564',
+        'L57', 'L59', 'L70', 'L80', 'L90', 'L94', 'L985', 'M04', 'M10',
+        'M122', 'M37', 'M432', 'M492', 'M651', 'M712', 'M728', 'M738',
+        'M83', 'M865', 'M872', 'M891', 'M90', 'N17', 'N19', 'N321', 'N328',
+        'N35', 'N37', 'N393', 'N42', 'N441', 'N46', 'N50', 'N61', 'N82',
+        'N91', 'N95', 'N951', 'N97', 'R02', 'R031', 'R070', 'R08', 'R093',
+        'R11', 'R14', 'R19', 'R198', 'R231', 'R32', 'R508', 'R580', 'R74',
+        'R786', 'R96', 'U05', 'U07', 'U90', 'X40', 'X470', 'X479', 'X49',
+        'Y10', 'Z00', 'Z17',
+    ]
+    GARBAGE_CODE_LEVELS[1]['end'] = [
+        'A419', 'A480', 'A483', 'A490', 'A599', 'A719', 'A740', 'B079',
+        'B309', 'B369', 'B854', 'B889', 'B940', 'D500', 'D509', 'D630',
+        'D64', 'D642', 'D659', 'D68', 'D699', 'E15', 'E16', 'E509', 'E641',
+        'E876', 'E879', 'F064', 'F072', 'F099', 'F179', 'F239', 'F49',
+        'F990', 'G080', 'G328', 'G442', 'G448', 'G472', 'G479', 'G609',
+        'G652', 'G839', 'G894', 'G912', 'G929', 'G932', 'G936', 'H05',
+        'H699', 'H99', 'I269', 'I314', 'I469', 'I509', 'I517', 'I674',
+        'I76', 'I951', 'I959', 'J699', 'J809', 'J853', 'J869', 'J931',
+        'J939', 'J942', 'J969', 'J983', 'K19', 'K30', 'K661', 'K669',
+        'K711', 'K720', 'K750', 'L309', 'L509', 'L540', 'L562', 'L565',
+        'L579', 'L689', 'L768', 'L879', 'L929', 'L96', 'L998', 'M04',
+        'M120', 'M29', 'M39', 'M49', 'M64', 'M71', 'M724', 'M73', 'M799',
+        'M862', 'M869', 'M879', 'M894', 'M999', 'N179', 'N199', 'N322',
+        'N338', 'N359', 'N378', 'N398', 'N434', 'N448', 'N489', 'N539',
+        'N649', 'N829', 'N915', 'N95', 'N959', 'N979', 'R029', 'R031',
+        'R070', 'R09', 'R093', 'R120', 'R159', 'R196', 'R23', 'R309',
+        'R501', 'R579', 'R729', 'R78', 'R948', 'R999', 'U05', 'U81', 'U99',
+        'X449', 'X470', 'X479', 'X499', 'Y199', 'Z158', 'Z17',
+    ]
+    GARBAGE_CODE_LEVELS[2]['begin'] = [
+        'A149', 'A29', 'A45', 'A47', 'A488', 'A493', 'A61', 'A72', 'A76',
+        'A97', 'B08', 'B11', 'B28', 'B31', 'B34', 'B61', 'B68', 'B73',
+        'B76', 'B78', 'B84', 'B93', 'B948', 'B956', 'B977', 'D59', 'D594',
+        'D598', 'G443', 'G913', 'G930', 'G933', 'I10', 'I15', 'I27',
+        'I272', 'I289', 'I70', 'I709', 'I74', 'J81', 'J90', 'J94', 'J948',
+        'K920', 'N70', 'N73', 'N743', 'R03', 'R04', 'R090', 'R098', 'R13',
+        'R16', 'R230', 'R58', 'S00', 'W47', 'W63', 'W71', 'W76', 'W82',
+        'W95', 'W98', 'X07', 'X55', 'X59', 'Y20', 'Y86', 'Y872', 'Y89',
+        'Y899',
+    ]
+    GARBAGE_CODE_LEVELS[2]['end'] = [
+        'A149', 'A29', 'A459', 'A48', 'A49', 'A499', 'A62', 'A73', 'A76',
+        'A97', 'B09', 'B14', 'B29', 'B324', 'B349', 'B62', 'B689', 'B742',
+        'B769', 'B818', 'B84', 'B94', 'B949', 'B973', 'B999', 'D59',
+        'D594', 'D599', 'G443', 'G913', 'G930', 'G933', 'I109', 'I159',
+        'I270', 'I279', 'I289', 'I701', 'I709', 'I758', 'J811', 'J900',
+        'J941', 'J949', 'K922', 'N719', 'N740', 'N748', 'R030', 'R069',
+        'R092', 'R109', 'R139', 'R189', 'R230', 'R58', 'S00', 'W48', 'W63',
+        'W72', 'W769', 'W82', 'W97', 'W98', 'X07', 'X56', 'X599', 'Y349',
+        'Y87', 'Y872', 'Y89', 'Y999',
+    ]
+    GARBAGE_CODE_LEVELS[3]['begin'] = [
+        'A01', 'A31', 'A42', 'A492', 'A64', 'A99', 'B37', 'B49', 'B551',
+        'B58', 'B89', 'C14', 'C26', 'C35', 'C39', 'C42', 'C46', 'C55',
+        'C579', 'C59', 'C639', 'C68', 'C689', 'C759', 'C87', 'C97', 'D01',
+        'D014', 'D024', 'D07', 'D073', 'D076', 'D091', 'D097', 'D099',
+        'D109', 'D13', 'D139', 'D144', 'D17', 'D28', 'D289', 'D299',
+        'D309', 'D360', 'D369', 'D376', 'D386', 'D397', 'D399', 'D409',
+        'D419', 'D44', 'D449', 'D48', 'D487', 'D495', 'D497', 'D54',
+        'D759', 'D79', 'D87', 'D898', 'E078', 'E17', 'E349', 'E37', 'E47',
+        'E62', 'E69', 'E877', 'E90', 'F04', 'F065', 'F078', 'F50', 'F508',
+        'G09', 'G15', 'G27', 'G33', 'G38', 'G42', 'G48', 'G66', 'G74',
+        'G84', 'G93', 'G938', 'G96', 'G98', 'I000', 'I03', 'I14', 'I16',
+        'I29', 'I44', 'I49', 'I51', 'I516', 'I518', 'I90', 'I96', 'I984',
+        'I99', 'J02', 'J028', 'J038', 'J041', 'J051', 'J48', 'J71', 'J819',
+        'J83', 'J859', 'J87', 'J909', 'J936', 'J97', 'J984', 'K319', 'K39',
+        'K47', 'K53', 'K63', 'K638', 'K69', 'K75', 'K78', 'K84', 'K87',
+        'K92', 'K929', 'K96', 'L06', 'L09', 'L15', 'L31', 'L69', 'L77',
+        'N09', 'N13', 'N24', 'N288', 'N38', 'N399', 'N54', 'N66', 'N78',
+        'N84', 'N842', 'N88', 'N92', 'N950', 'O08', 'O17', 'O27', 'O37',
+        'O49', 'O78', 'O93', 'P06', 'P16', 'P30', 'P40', 'P62', 'P73',
+        'P79', 'P82', 'P85', 'P969', 'Q08', 'Q19', 'Q29', 'Q360', 'Q46',
+        'Q88', 'Q899', 'Q94', 'Q999', 'R07', 'R071', 'R31',
+    ]
+    GARBAGE_CODE_LEVELS[3]['end'] = [
+        'A01', 'A319', 'A449', 'A492', 'A640', 'A990', 'B469', 'B499',
+        'B552', 'B599', 'B89', 'C149', 'C29', 'C36', 'C399', 'C42', 'C469',
+        'C559', 'C579', 'C59', 'C639', 'C68', 'C689', 'C809', 'C87',
+        'D000', 'D01', 'D02', 'D029', 'D07', 'D073', 'D09', 'D091', 'D097',
+        'D10', 'D109', 'D13', 'D14', 'D144', 'D219', 'D28', 'D29', 'D30',
+        'D309', 'D360', 'D370', 'D38', 'D390', 'D397', 'D40', 'D41',
+        'D419', 'D44', 'D449', 'D48', 'D491', 'D495', 'D499', 'D54',
+        'D759', 'D85', 'D88', 'D99', 'E089', 'E19', 'E358', 'E39', 'E49',
+        'E62', 'E69', 'E877', 'E998', 'F061', 'F070', 'F08', 'F50', 'F509',
+        'G099', 'G19', 'G29', 'G34', 'G39', 'G42', 'G49', 'G69', 'G79',
+        'G88', 'G93', 'G948', 'G969', 'G989', 'I000', 'I04', 'I14', 'I19',
+        'I299', 'I459', 'I499', 'I51', 'I516', 'I59', 'I94', 'I969',
+        'I988', 'J000', 'J02', 'J03', 'J04', 'J043', 'J069', 'J59', 'J79',
+        'J819', 'J83', 'J859', 'J89', 'J909', 'J936', 'J980', 'J998',
+        'K34', 'K39', 'K49', 'K54', 'K634', 'K639', 'K69', 'K75', 'K79',
+        'K84', 'K89', 'K92', 'K93', 'K99', 'L07', 'L09', 'L19', 'L39',
+        'L69', 'L79', 'N09', 'N139', 'N24', 'N289', 'N38', 'N409', 'N59',
+        'N69', 'N79', 'N84', 'N86', 'N909', 'N949', 'N950', 'O089', 'O19',
+        'O27', 'O39', 'O59', 'O79', 'O959', 'P06', 'P18', 'P342', 'P49',
+        'P69', 'P73', 'P79', 'P82', 'P89', 'P999', 'Q103', 'Q19', 'Q29',
+        'Q369', 'Q49', 'Q88', 'Q899', 'Q94', 'R012', 'R07', 'R079', 'R319',
+    ]
+    GARBAGE_CODE_LEVELS[4]['begin'] = [
+        'B54', 'B559', 'B64', 'B82', 'B839', 'D471', 'G00', 'G009', 'G039',
+        'I42', 'I429', 'I515', 'I64', 'I67', 'I678', 'I688', 'I694', 'J07',
+        'J159', 'J17', 'J22', 'J64', 'P23', 'P235', 'P373', 'V87', 'V874',
+        'V884', 'V99', 'Y09', 'Y85',
+    ]
+    GARBAGE_CODE_LEVELS[4]['end'] = [
+        'B55', 'B559', 'B64', 'B829', 'B839', 'D471', 'G00', 'G028',
+        'G039', 'I420', 'I429', 'I515', 'I649', 'I67', 'I68', 'I69',
+        'I699', 'J08', 'J159', 'J196', 'J29', 'J649', 'P23', 'P239',
+        'P374', 'V871', 'V881', 'V899', 'V990', 'Y099', 'Y859',
+    ]
+
     @classmethod
     def icd_chapter(cls, icd: str) -> Union[str, int]:
         icd = icd.upper().replace('.', '')[:3]
@@ -391,6 +515,16 @@ class DeathCauseAugmenter(Augmenter):
         return values
 
     @classmethod
+    def garbage_code(cls, icd: str) -> str:
+        for level in range(4, 0, -1):
+            gc = cls.GARBAGE_CODE_LEVELS[level]
+            idx = bisect.bisect(gc['begin'], icd)
+            last = gc['end'][idx - 1]
+            if idx > 0 and icd[:len(last)] <= last:
+                return level
+        return 0
+
+    @classmethod
     def get_new_values(cls, row: Dict) -> Dict:
         icd = row.get('CAUSABAS', None)
         if not icd:
@@ -404,6 +538,7 @@ class DeathCauseAugmenter(Augmenter):
         else:
             covid = cls.covid(icd)
         return {
+            'GARBAGECODE': cls.garbage_code(icd),
             'CAPCID': cls.icd_chapter(icd),
             'COVID': covid,
             'CIDBR': cidbr,
@@ -430,13 +565,13 @@ ALL_AUGMENTERS = [
 
 class AugmentedSIM:
 
-    def __init__(self, input_file_name, output_file_name):
-        self.input_file_name = input_file_name
+    def __init__(self, input_file_names, output_file_name):
+        self.input_file_names = input_file_names
         self.output_file_name = output_file_name
 
     def augment(self):
         # Open input file
-        parser = TableParser(self.input_file_name)
+        parser = TableParser(self.input_file_names)
         cols = parser.columns[:]
 
         # Add new columns depending on the existing ones
@@ -472,13 +607,16 @@ def main():
 
     # Command-line arguments
     arg_parser = argparse.ArgumentParser(description=desc)
-    arg_parser.add_argument('input_file', type=argparse.FileType('r'),
-                            help='input file name (DBF or CSV)')
     arg_parser.add_argument('output_file', type=argparse.FileType('w'),
                             help='output file name (CSV)')
+    arg_parser.add_argument('input_files', nargs='+',
+                            type=argparse.FileType('rb'),
+                            help='input file names (DBF or CSV)')
     a = arg_parser.parse_args()
+    for f in a.input_files + [a.output_file]:
+        f.close()
 
-    aug = AugmentedSIM(a.input_file.name, a.output_file.name)
+    aug = AugmentedSIM([f.name for f in a.input_files], a.output_file.name)
     aug.augment()
 
 
