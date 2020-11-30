@@ -417,6 +417,41 @@ ALL_AUGMENTERS = [
 ]
 
 
+class AugmentedSIM:
+
+    def __init__(self, input_file_name, output_file_name):
+        self.input_file_name = input_file_name
+        self.output_file_name = output_file_name
+
+    def augment(self):
+        # Open input file
+        parser = TableParser(self.input_file_name)
+        cols = parser.columns[:]
+
+        # Add new columns depending on the existing ones
+        for existing_column, new_columns in COLS_AFTER.items():
+            try:
+                idx = cols.index(existing_column)
+                for col in reversed(new_columns):
+                    cols.insert(idx + 1, col)
+            except ValueError:
+                pass
+
+        # Open output file
+        with open(self.output_file_name, 'w') as fd:
+            writer = csv.DictWriter(fd, cols, delimiter=',',
+                                    quoting=csv.QUOTE_NONNUMERIC)
+            writer.writeheader()
+
+            for row in parser.parse():
+                parsed_row = SIMRowParser.parse_row(row)
+                for augmenter in ALL_AUGMENTERS:
+                    row.update(augmenter.get_new_values(parsed_row))
+
+                # write to the CSV file
+                writer.writerow(row)
+
+
 def main():
     desc = '''
     This script reads a DBF or CSV file containing death causes encoded
@@ -432,33 +467,14 @@ def main():
                             help='output file name (CSV)')
     a = arg_parser.parse_args()
 
-    # Open input file
-    parser = TableParser(a.input_file.name)
-    cols = parser.columns[:]
-
-    # Add new columns depending on the existing ones
-    for existing_column, new_columns in COLS_AFTER.items():
-        try:
-            idx = cols.index(existing_column)
-            for col in reversed(new_columns):
-                cols.insert(idx + 1, col)
-        except ValueError:
-            pass
-
-    # Open output file
-    with open(a.output_file.name, 'w') as fd:
-        writer = csv.DictWriter(fd, cols, delimiter=',',
-                                quoting=csv.QUOTE_NONNUMERIC)
-        writer.writeheader()
-
-        for row in parser.parse():
-            parsed_row = SIMRowParser.parse_row(row)
-            for augmenter in ALL_AUGMENTERS:
-                row.update(augmenter.get_new_values(parsed_row))
-
-            # finally, write to the CSV file
-            writer.writerow(row)
+    aug = AugmentedSIM(a.input_file.name, a.output_file.name)
+    aug.augment()
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) <= 1:  # No arguments
+        from gui.augmented_sim_gui import AugmentedSIMGUI
+        AugmentedSIMGUI(augment_cls=AugmentedSIM)
+    else:
+        main()

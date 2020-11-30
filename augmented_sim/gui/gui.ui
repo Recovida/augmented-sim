@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>871</width>
+    <height>313</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Augmented SIM</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="2,0,0,0,0">
+    <item row="3" column="0" colspan="5">
+     <widget class="QPushButton" name="btn_execute">
+      <property name="text">
+       <string>Executar operação</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_outfile1">
+      <property name="text">
+       <string>Arquivo de saída (CSV)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QLineEdit" name="edit_file1"/>
+    </item>
+    <item row="2" column="3">
+     <widget class="QLineEdit" name="edit_outfile1"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_file1">
+      <property name="text">
+       <string>Arquivo de entrada (DBF/CSV)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QPushButton" name="btn_outfile1">
+      <property name="text">
+       <string>Escolher...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="5">
+     <widget class="QLabel" name="label_msg">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QPushButton" name="btn_file1">
+      <property name="text">
+       <string>Escolher...</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
