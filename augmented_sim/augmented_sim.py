@@ -159,8 +159,8 @@ class AgeAugmenter(Augmenter):
     REQUIRES = ['IDADE']
     PRODUCES = [
         'IDADEGERAL',     # age in years (0 if < 1 year old)
-        'IDADECAT1',      # ?
-        'IDADECAT2'       # age category (1..8)
+        'IDADECAT1',      # age category I (1..20)
+        'IDADECAT2'       # age category II (1..8)
     ]
 
     @classmethod
@@ -172,7 +172,7 @@ class AgeAugmenter(Augmenter):
             'IDADEGERAL':
                 age.years,
             'IDADECAT1':
-                0,
+                1 if age.years < 1 else min(20, 2 + age.years // 5),
             'IDADECAT2':
                 bisect.bisect([0, 5, 20, 40, 60, 70, 80, 90], age.years)
         }
@@ -220,7 +220,7 @@ class DeathCauseAugmenter(Augmenter):
     REQUIRES = ['CAUSABAS']
     PRODUCES = [
         'CAPCID',       # ICD chapter (integer)
-        'COVID',        # 0=unknown, 1=yes, 2=suspected
+        'COVID',        # COVID-19 (0=missing/no, 1=yes, 2=suspected)
         'CIDBR',        # CID-BR code (usually an integer)
         'DCOR',         # heart diseases (0/1)
         'OUTCOR',       # other heart diseases (0/1)
@@ -336,14 +336,14 @@ class DeathCauseAugmenter(Augmenter):
         return cls.INVALID_ICD_CHAPTER
 
     @classmethod
-    def covid(cls, icd: str) -> Union[str, int]:
+    def covid(cls, icd: str) -> int:
         if icd.startswith('B342'):
             return 1  # yes
         if icd.startswith('U04'):
             return 2  # suspected
         if icd.startswith('U99'):
             return cls.INVALID_COVID  # invalid
-        return ''  # no
+        return 0  # no
 
     @classmethod
     def icd_to_cidbr(cls, icd: str) -> str:
@@ -399,9 +399,13 @@ class DeathCauseAugmenter(Augmenter):
                 'COVID': cls.INVALID_COVID
             }
         cidbr = cls.icd_to_cidbr(icd)
+        if 'DTOBITO' in row and row['DTOBITO'].year < 2020:
+            covid = 0
+        else:
+            covid = cls.covid(icd)
         return {
             'CAPCID': cls.icd_chapter(icd),
-            'COVID': cls.covid(icd),
+            'COVID': covid,
             'CIDBR': cidbr,
             **cls.cidbr_conditions(cidbr)
         }
