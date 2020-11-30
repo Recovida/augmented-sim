@@ -44,6 +44,9 @@ class SIMRowParser:
 
     @classmethod
     def parse_date(cls, d: str) -> Optional[datetime.date]:
+        # foreseeing a problem caused by spreadsheets:
+        if isinstance(d, str) and len(d) == 7:
+            d = '0' + d
         try:
             return datetime.datetime.strptime(d, '%d%m%Y').date()
         except (TypeError, ValueError):
