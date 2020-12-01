@@ -5,9 +5,16 @@ import bisect
 import csv
 import dbfread
 import datetime
+import os
+import threading
 
 from dateutil.relativedelta import relativedelta
-from typing import Optional, Tuple, Union, Dict
+from typing import Optional, Tuple, Union, Dict, List, Callable
+
+try:
+    from tqdm import tqdm  # optional, for progress display
+except Exception:
+    pass
 
 
 class TableParser:
@@ -16,29 +23,65 @@ class TableParser:
     def __init__(self, file_names: str):
         self.files = []
         self.columns = []
+        self.read_count = {}
+        self.currently_reading = ''
+        self.finished = False
         for file_name in file_names:
+            self.read_count[file_name] = 0
             if file_name.lower().endswith('.csv'):
                 format = 'CSV'
                 fd = open(file_name, 'r', encoding='utf-8-sig')
                 dialect = csv.Sniffer().sniff(fd.read(1024))
+                fd.seek(0, os.SEEK_END)
+                denominator = fd.tell()
                 fd.seek(0)
-                parser = csv.DictReader(fd, dialect=dialect)
+                parser = csv.DictReader(iter(fd.readline, ''), dialect=dialect)
                 columns = parser.fieldnames
+                get_pos = (lambda fd: lambda: fd.tell())(fd)
             elif file_name.lower().endswith('.dbf'):
                 format = 'DBF'
                 parser = dbfread.DBF(file_name)
                 columns = parser.field_names[:]
+                denominator = parser.header.numrecords
+                get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
             else:
                 raise Exception('Formato não suportado.')
-            self.files.append((file_name, format, parser, columns))
+            self.files.append(
+                [file_name, format, parser, columns, get_pos, 0, denominator]
+            )
             for column in columns:
                 if column not in self.columns:
                     self.columns.append(column)
 
     def parse(self):
-        for file_name, format, parser, columns in self.files:
+        self.finished = False
+        for f in self.files:
+            file_name, format, parser, columns, get_pos, num, den = f
+            self.currently_reading = file_name
             for row in parser:
+                self.read_count[file_name] += 1
+                f[-2] = min(den, get_pos())
                 yield row
+        self.currently_reading = ''
+        self.finished = True
+
+    def progress(self):
+        overall_num = 0
+        overall_den = 0
+        current = None
+        try:
+            for f in self.files:
+                file_name, format, parser, columns, get_pos, num, den = f
+                overall_num += num / den
+                overall_den += 1
+                if current is None and num < den:
+                    current = (num, den)
+        except Exception:
+            return (0, 1, 0, 1, '')
+        else:
+            if current is None:
+                current = (overall_num and 1, 1)
+            return (*current, overall_num, overall_den, self.currently_reading)
 
 
 class SIMRowParser:
@@ -563,13 +606,53 @@ ALL_AUGMENTERS = [
 ]
 
 
+class AugmentThread(threading.Thread):
+
+    def __init__(self,
+                 output_file_name: str,
+                 parser: Union[csv.DictReader, dbfread.DBF],
+                 cols: List[str],
+                 report_progress: Callable[[List], None] = None,
+                 report_exception: Callable[[BaseException], str] = None
+                 ):
+        super().__init__()
+        self.output_file_name = output_file_name
+        self.parser = parser
+        self.cols = cols
+        self.report_progress = report_progress
+        self.report_exception = report_exception
+
+    def run(self):
+        self.exception = None
+        try:
+            if self.report_progress:
+                self.report_progress(self.parser.progress())
+            with open(self.output_file_name, 'w') as fd:
+                writer = csv.DictWriter(fd, self.cols, delimiter=',',
+                                        quoting=csv.QUOTE_NONNUMERIC)
+                writer.writeheader()
+                for row in self.parser.parse():
+                    parsed_row = SIMRowParser.parse_row(row)
+                    for augmenter in ALL_AUGMENTERS:
+                        row.update(augmenter.get_new_values(parsed_row))
+                    writer.writerow(row)
+                    if self.report_progress:
+                        self.report_progress(self.parser.progress())
+            print('Ok')
+        except BaseException as e:
+            if self.report_exception:
+                import traceback
+                self.report_exception(e, traceback.format_exc())
+
+
 class AugmentedSIM:
 
     def __init__(self, input_file_names, output_file_name):
         self.input_file_names = input_file_names
         self.output_file_name = output_file_name
 
-    def augment(self):
+    def augment(self, report_progress=None, report_exception=None):
+
         # Open input file
         parser = TableParser(self.input_file_names)
         cols = parser.columns[:]
@@ -583,19 +666,36 @@ class AugmentedSIM:
             except ValueError:
                 pass
 
+        # Progress
+        if tqdm:
+            progress = parser.progress()
+            fmt = '{l_bar}{bar}'
+            overall_pbar = tqdm(
+                total=progress[3], bar_format=fmt, colour='green',
+                desc='OVERALL',  position=0, leave=False
+            )
+            current_pbar = tqdm(
+                total=progress[1], bar_format=fmt, colour='green',
+                desc='CURRENT', position=1, leave=False
+            )
+
+            def report(progress):
+                if report_progress:
+                    report_progress(progress)
+                if tqdm:
+                    overall_pbar.update(-overall_pbar.n + progress[2])
+                    current_pbar.total = progress[1]
+                    current_pbar.update(-current_pbar.n + progress[0])
+                if progress[2] == progress[3]:
+                    if tqdm:
+                        for bar in [overall_pbar, current_pbar]:
+                            bar.close()
+
         # Open output file
-        with open(self.output_file_name, 'w') as fd:
-            writer = csv.DictWriter(fd, cols, delimiter=',',
-                                    quoting=csv.QUOTE_NONNUMERIC)
-            writer.writeheader()
-
-            for row in parser.parse():
-                parsed_row = SIMRowParser.parse_row(row)
-                for augmenter in ALL_AUGMENTERS:
-                    row.update(augmenter.get_new_values(parsed_row))
-
-                # write to the CSV file
-                writer.writerow(row)
+        thread = AugmentThread(
+            self.output_file_name, parser, cols, report, report_exception
+        )
+        thread.start()
 
 
 def main():
