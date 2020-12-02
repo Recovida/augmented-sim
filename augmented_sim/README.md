@@ -35,7 +35,7 @@ estão presentes nos arquivos de entrada.
   representam, respectivamente, a idade em anos e as categorias descritas
   na tabela abaixo.
 
-  <table>
+<table>
 <thead>
   <tr>
     <th>Intervalo de <code>IDADEGERAL</code></th>
@@ -138,7 +138,7 @@ estão presentes nos arquivos de entrada.
 - `AREARENDA`: representa a renda do bairro de residência obtido a partir
   da coluna `CODBAIRES`, de acordo com os valores abaixo.
 
-  <table>
+<table>
   <thead>
     <tr>
       <th>Renda do bairro de código <code>CODBAIRES</code><br></th>
@@ -181,7 +181,7 @@ estão presentes nos arquivos de entrada.
   representa a possibilidade de a causa obtida na coluna
   `CAUSABAS` indicar um óbito causado pela COVID-19, conforme tabela abaixo.
 
-  <table>
+<table>
 <thead>
   <tr>
     <th><code>CAUSABAS</code></th>
@@ -228,7 +228,7 @@ estão presentes nos arquivos de entrada.
   com exceção das colunas `GPP` e `PERI`, que variam de 1 a 5 conforme
   o código CID-BR varia de 88 a 92 e de 93 a 97, respectivamente.
 
-  <table>
+<table>
   <thead>
     <tr>
       <th>CID-BR</th>
