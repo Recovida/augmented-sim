@@ -4,8 +4,7 @@ try:
     from PyQt5.QtGui import QKeyEvent, QKeySequence
     from PyQt5.QtCore import QObject, pyqtSignal
     from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
-
-    from .gui import Ui_MainWindow
+    from gui.gui import Ui_MainWindow
 except Exception as e:
     print('PyQt5 não foi encontrado. Segue traceback:')
     raise e
@@ -118,4 +117,5 @@ class AugmentedSIMGUI(QObject):
 
 
 if __name__ == '__main__':
-    AugmentedSIMGUI()
+    from augmented_sim import AugmentedSIM
+    AugmentedSIMGUI(augment_cls=AugmentedSIM)

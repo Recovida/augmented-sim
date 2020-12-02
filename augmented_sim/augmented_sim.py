@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import sys
+if sys.version_info < (3, 6):
+    print('Este programa requer Python 3.6 ou superior.', file=sys.stderr)
+    exit(1)
+
 import argparse
 import bisect
 import csv
@@ -242,12 +247,13 @@ class NeighbourhoodAugmenter(Augmenter):
         80: 2, 81: 1, 82: 1, 83: 3, 84: 1, 85: 2, 86: 3, 87: 2, 88: 2, 89: 3,
         90: 1, 91: 2, 92: 1, 93: 2, 94: 2, 95: 2, 96: 1
     }
-    neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
+    # neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
 
     @classmethod
-    def neighbourhood_income(cls, neighbourhood: int) -> str:
-        income_id = cls.neighbourhood_income_table.get(neighbourhood, -1)
-        return cls.neighbourhood_income_names.get(income_id, None)
+    def neighbourhood_income(cls, neighbourhood: int) -> int:
+        income_id = cls.neighbourhood_income_table.get(neighbourhood, 0)
+        # return cls.neighbourhood_income_names.get(income_id, None)
+        return income_id
 
     @classmethod
     def get_new_values(cls, row: Dict) -> Dict:
@@ -721,9 +727,4 @@ def main():
 
 
 if __name__ == '__main__':
-    import sys
-    if len(sys.argv) <= 1:  # No arguments
-        from gui.augmented_sim_gui import AugmentedSIMGUI
-        AugmentedSIMGUI(augment_cls=AugmentedSIM)
-    else:
-        main()
+    main()
