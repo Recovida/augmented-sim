@@ -23,7 +23,7 @@
    <locale language="Portuguese" country="Brazil"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout" rowstretch="4,1,1,1,1,1,1,1,1">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="4,1,1,1,1,1,1,1,1" columnstretch="2,5,2,0">
     <item row="5" column="1" colspan="3">
      <widget class="QProgressBar" name="pbar_current">
       <property name="value">
@@ -116,9 +116,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="edit_outfile1"/>
-    </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_outfile1">
       <property name="text">
@@ -164,6 +161,9 @@
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="QLineEdit" name="edit_outfile1"/>
     </item>
    </layout>
   </widget>
