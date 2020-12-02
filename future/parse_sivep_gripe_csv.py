@@ -18,7 +18,8 @@ def process_row(row):
         value = row[k]
         if k.startswith('Dt ') and isinstance(value, str):
             for p in DATE_PATTERNS:
-                if (match := p.match(value)):
+                match = p.match(value)
+                if match:
                     year = int(match.group('y'))
                     month = int(match.group('m'))
                     day = int(match.group('d'))
