@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 from setuptools import setup, find_packages
+
 import pathlib
+
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -46,9 +48,9 @@ setup(
 
     keywords='SIM, mortality, healthcare, ICD',
 
-    package_dir={'': 'src'},
+    # package_dir={'': 'augmented_sim'},
 
-    packages=find_packages(where='src'),
+    packages=find_packages(),
 
     python_requires='>=3.6, <4',
 
@@ -62,10 +64,10 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'augmentedsim=augmented_sim.augmented_sim:main',
+            'augmentedsim_cli=augmented_sim.augmented_sim_cli:main',
         ],
         'gui_scripts': [
-            'Augmented SIM=augmented_sim.augmented_sim_gui:main',
+            'augmentedsim_gui=augmented_sim.augmented_sim_gui:main',
         ],
     },
 
@@ -73,4 +75,5 @@ setup(
     #     'Bug Reports': gitlab_url + '/-/issues',
     #     'Source': gitlab_url,
     # },
+
 )

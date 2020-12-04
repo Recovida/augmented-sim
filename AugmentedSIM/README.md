@@ -1,11 +1,11 @@
 # Augmented SIM
 
-
 Este programa lê um conjunto de tabelas (CSV ou DBF) com dados de óbitos
 codificados de acordo com o *Sistema de Informação sobre Mortalidade* (SIM)
 e, a partir das informações disponíveis nas colunas já existentes,
 cria um único arquivo contendo todos os dados após o acréscimo de algumas
-colunas.
+colunas. Para instruções de instalação e uso, veja o arquivo
+[INSTALL.md](INSTALL.md).
 
 O programa salva um único arquivo no formato CSV (*comma-separated values*),
 que pode ser aberto por diversos programas que tratam de dados tabulados,
@@ -16,6 +16,15 @@ tais como
 [SAS](https://www.sas.com/),
 [Stata](https://www.stata.com/) e
 [MiniTab](https://www.minitab.com/).
+
+**Importante:**
+
+- Se algum dos arquivos de entrada contiver mais de uma coluna com o mesmo
+  nome, **apenas uma** será mantida. Isto é uma consequência do funcionamento dos
+  parsers.
+- Se algum dos arquivos de entrada possuir alguma coluna com o mesmo nome de
+  uma das colunas a serem inseridas por este programa,
+  a coluna original será **substituída**.
 
 Seguem as colunas que este programa insere. Note que não são inseridas colunas
 que dependem da existência de colunas que não

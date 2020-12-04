@@ -21,7 +21,7 @@ Os programas estão sendo desenvolvidos pelos seguintes membros do projeto:
 
 A documentação de cada ferramenta encontra-se na respectiva pasta.
 
-#### 1. [Augmented SIM:](augmented_sim)
+#### 1. [Augmented SIM:](AugmentedSIM)
 
 A partir de tabelas com dados de óbitos codificados de acordo com o
 *Sistema de Informação sobre Mortalidade* (SIM), o programa adiciona
