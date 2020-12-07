@@ -85,6 +85,7 @@ class AugmentedSIMGUI(QObject):
         existing = {w.item(i).text() for i in range(w.count())}
         for f in files:
             if f not in existing and os.path.isfile(f):
+                f = os.path.abspath(f)
                 self.ui.list_infile1.addItem(f)
                 existing.add(f)
 
@@ -102,7 +103,7 @@ class AugmentedSIMGUI(QObject):
 
     def fill_outfile1(self, file):
         if file and os.path.isdir(os.path.dirname(file)):
-            self.ui.edit_outfile1.setText(file)
+            self.ui.edit_outfile1.setText(os.path.abspath(file))
 
     def _error_msg(self, title, message):
         msgbox = QMessageBox(
