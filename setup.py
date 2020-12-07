@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages
 
 import pathlib
+import platform
 
 
 NAME = 'Augmented SIM'
@@ -16,6 +17,9 @@ here = pathlib.Path(__file__).parent.resolve()
 LONG_DESCRIPTION = (here / 'README.md').read_text(encoding='utf-8')
 DEPENDENCIES = (here / 'requirements.txt') \
                 .read_text(encoding='utf-8').strip().split('\n')
+
+here = pathlib.Path(__file__).parent.resolve()
+windows = platform.system() == 'Windows'
 
 s = setup(
     name=PACKAGE_NAME,
@@ -68,7 +72,7 @@ def create_shortcut(directory):
     import os
     import pyshortcuts
 
-    # On Linux, add to some categoriess
+    # On Linux, add to some categories
     df = pyshortcuts.linux.DESKTOP_FORM
     add = 'Categories=Office;Spreadsheet;Database;MedicalSoftware;'
     pyshortcuts.linux.DESKTOP_FORM = df.rstrip() + '\n' + add
