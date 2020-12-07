@@ -10,14 +10,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, \
                             QMessageBox
 
-# Support both local and installed execution
-p = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-print(sys.path)
-if p not in sys.path:
-    print('Inserindo', p)
-    sys.path.append(p)
-from gui.gui import Ui_MainWindow
-from augmented_sim import AugmentedSIM
+from augmented_sim.gui.gui import Ui_MainWindow
+from augmented_sim.core import AugmentedSIM
 
 
 class DeleteFilter(QObject):

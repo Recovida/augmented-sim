@@ -18,7 +18,7 @@ Ao instalar, certifique-se de **deixar marcada** a
 na parte inferior do instalador.
 
 1. Faça
-[download do conteúdo deste repositório](https://gitlab.com/projeto-fm/mortalidadesp/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
+[download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
 1. Abra uma janela de um prompt de comando (CMD) ou Powershell dentro
 da pasta/diretório `augmented_sim`. <small>Para fazer isso, mantenha
@@ -26,15 +26,16 @@ pressionada a tecla
 Shift e clique com
 o botão direito do mouse em um lugar vazio dentro da pasta. Escolha a opção
 de abrir o prompt de comando ou o Powershell.</small><br>
-Nessa janela:
-- Se preferir executar **do próprio diretório**,
-    sem instalar:<br>
-- Caso queira **instalar**:<br>
-    Digite `python setup.py install`
-    e aperte Enter.
-    O programa com interface gráfica poderá então ser executado chamando
-    `augmentedsim_gui`, e a interface de
-    linha de comando pode ser utilizada executando `augmentedsim_cli`.
+Dentro da janela do prompt de comando ou Powershell:
+  - Se preferir executar **do próprio diretório**,
+      sem instalar:<br>
+      ...
+  - Caso queira **instalar**:<br>
+      Digite `python setup.py install`
+      e aperte Enter.
+      O programa com interface gráfica poderá então ser executado chamando
+      `augmentedsim_gui`, e a interface de
+      linha de comando pode ser utilizada executando `augmentedsim_cli`.
 
 
 #### macOS
@@ -46,9 +47,9 @@ Se necessário, consulte a
 [documentação](https://docs.python.org/pt-br/3/using/mac.html).
 
 1. Faça
-[download do conteúdo deste repositório](https://gitlab.com/projeto-fm/mortalidadesp/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
+[download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
-
+[,,,]
 
 
 #### Linux
@@ -63,7 +64,7 @@ erros e mostre uma versão igual ou superior a 3.6, não é necessário instalar
 outra versão.
 
 1. Faça
-[download do conteúdo deste repositório](https://gitlab.com/projeto-fm/mortalidadesp/-/archive/master/mortalidadesp-master.tar.gz) e descompacte-o.
+[download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
 1. Abra uma janela de um terminal dentro do diretório `augmented_sim`.
 

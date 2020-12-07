@@ -3,14 +3,7 @@
 
 import argparse
 
-# Support both local and installed execution
-# try:
-#     from augmented_sim.augmented_sim import AugmentedSIM
-# except ModuleNotFoundError:
-#     from augmented_sim import AugmentedSIM
-
-
-from augmented_sim.augmented_sim import AugmentedSIM
+from augmented_sim.core import AugmentedSIM
 
 
 def main():

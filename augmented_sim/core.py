@@ -8,12 +8,6 @@ if sys.version_info < (3, 6):
 
 import os.path
 
-# Support both local and installed execution
-# p = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-# if p not in sys.path:
-#     sys.path.insert(0, p)
-#     print(sys.path)
-
 import os
 import threading
 
@@ -21,14 +15,14 @@ from typing import List, Callable
 from pathlib import Path
 from tqdm import tqdm
 
-from table_reader import TableReader
-from table_writer import TableWriter
-from sim.row_parser import SIMRowParser
+from augmented_sim.table_reader import TableReader
+from augmented_sim.table_writer import TableWriter
+from augmented_sim.sim.row_parser import SIMRowParser
 
-from sim.age_augmenter import AgeAugmenter
-from sim.death_cause_augmenter import DeathCauseAugmenter
-from sim.death_date_augmenter import DeathDateAugmenter
-from sim.neighbourhood_augmenter import NeighbourhoodAugmenter
+from augmented_sim.sim.age_augmenter import AgeAugmenter
+from augmented_sim.sim.death_cause_augmenter import DeathCauseAugmenter
+from augmented_sim.sim.death_date_augmenter import DeathDateAugmenter
+from augmented_sim.sim.neighbourhood_augmenter import NeighbourhoodAugmenter
 
 
 def exception_to_user_friendly_error_message(e):
