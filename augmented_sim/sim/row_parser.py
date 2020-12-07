@@ -29,7 +29,7 @@ class SIMRowParser:
             unit, value = 4, value + 100
         args = ['minutes', 'hours', 'days', 'months', 'years']
         if 0 <= unit < len(args):
-            return relativedelta(**{args[unit]: value})
+            return relativedelta(**{args[unit]: value}).normalized()
         return None
 
     @classmethod

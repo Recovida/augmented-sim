@@ -11,9 +11,10 @@ import os.path
 import os
 import threading
 
-from typing import List, Callable
+from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from tqdm import tqdm
+from typing import List, Callable
 
 from augmented_sim.table_reader import TableReader
 from augmented_sim.table_writer import TableWriter
@@ -74,7 +75,8 @@ class AugmentThread(threading.Thread):
                  parser: TableReader.UNION_ALL_PARSERS,
                  cols: List[str],
                  report_progress: Callable[[List], None] = None,
-                 report_exception: Callable[[BaseException], str] = None
+                 report_exception: Callable[[BaseException, str], None] = None,
+                 report_conclusion: Callable[[], None] = None
                  ):
         super().__init__()
         self.output_file_name = output_file_name
@@ -82,6 +84,7 @@ class AugmentThread(threading.Thread):
         self.cols = cols
         self.report_progress = report_progress
         self.report_exception = report_exception
+        self.report_conclusion = report_conclusion
 
     def run(self):
         self.exception = None
@@ -101,7 +104,9 @@ class AugmentThread(threading.Thread):
                     if self.report_progress:
                         self.report_progress(self.parser.progress())
                 if self.report_progress:
-                    self.report_progress(100)
+                    self.report_progress(self.parser.progress())
+            if self.report_conclusion:
+                self.report_conclusion()
         except BaseException as e:
             if self.report_exception:
                 msg = exception_to_user_friendly_error_message(e)
@@ -114,7 +119,10 @@ class AugmentedSIM:
         self.input_file_names = input_file_names
         self.output_file_name = output_file_name
 
-    def augment(self, report_progress=None, report_exception=None):
+    def augment(self,
+                report_progress: Callable[[List], None] = None,
+                report_exception: Callable[[BaseException, str], None] = None,
+                report_conclusion: Callable[[str], None] = None):
 
         # Open input file
         parser = TableReader(self.input_file_names)
@@ -131,7 +139,7 @@ class AugmentedSIM:
 
         # Progress
         progress = parser.progress()
-        fmt = '{l_bar}{bar}'
+        fmt = '{l_bar}{bar} {remaining}'
         overall_pbar = tqdm(
             total=progress[3], bar_format=fmt, colour='green',
             desc='OVERALL',  position=0, leave=False
@@ -141,18 +149,50 @@ class AugmentedSIM:
             desc='CURRENT', position=1, leave=False
         )
 
-        def report(progress):
+        def _report_progress(progress):
             if report_progress:
                 report_progress(progress)
             overall_pbar.update(-overall_pbar.n + progress[2])
             current_pbar.total = progress[1]
             current_pbar.update(-current_pbar.n + progress[0])
-            if progress[2] == progress[3]:
-                for bar in [overall_pbar, current_pbar]:
-                    bar.close()
+
+        def _report_exception(exc, msg):
+            print(msg)
+            report_exception(exc, msg)
+
+        def _format_elapsed_time(dt):
+            # Report elapsed time (in Portuguese)
+            t_str = []
+            expr = [
+                ('days', 'd'), ('hours', 'h'),
+                ('minutes', 'min'), ('seconds', 's')
+            ]
+            for attr, symbol in expr:
+                value = getattr(dt, attr)
+                if symbol == 's' and len(t_str) == 0:
+                    value = round(value, 3)
+                else:
+                    value = int(value)
+                if value > 0:
+                    t_str.append(str(value).replace('.', ',') + symbol)
+            if len(t_str) == 0:
+                t_str = ['0s']
+            return ''.join(t_str)
+
+        def _report_conclusion():
+            for bar in [overall_pbar, current_pbar]:
+                bar.close()
+            elapsed = overall_pbar.format_dict['elapsed']
+            if report_conclusion:
+                report_conclusion(elapsed)
+            # Using an integer to get integer attributes later
+            dt = relativedelta(seconds=elapsed)
+            s = _format_elapsed_time(dt)
+            print(f'\nArquivo salvo (tempo decorrido: {s}).')
 
         # Open output file
         thread = AugmentThread(
-            self.output_file_name, parser, cols, report, report_exception
+            self.output_file_name, parser, cols,
+            _report_progress, _report_exception, _report_conclusion
         )
         thread.start()

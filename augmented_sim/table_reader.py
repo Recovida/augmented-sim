@@ -64,8 +64,8 @@ class TableReader:
         try:
             for f in self.files:
                 file_name, format, parser, columns, get_pos, num, den = f
-                overall_num += num / den
-                overall_den += 1
+                overall_num += num
+                overall_den += den
                 if current is None and num < den:
                     current = (num, den)
         except Exception:
