@@ -10,7 +10,7 @@ versão 3.6 ou superior.
 Se necessário, consulte a
 [documentação](https://docs.python.org/pt-br/3/using/windows.html#the-full-installer).
 Ao instalar, certifique-se de **deixar marcada** a
-[opção *Add Python to PATH* ](https://docs.python.org/pt-br/3/using/windows.html#installation-steps)
+[opção *Add Python to PATH*](https://docs.python.org/pt-br/3/using/windows.html#installation-steps)
 na parte inferior do instalador.
 
 1. Faça
@@ -80,9 +80,9 @@ outra versão.
       disponível: `python3 ./augmented_sim/augmented_sim_cli.py`.
 
   - Caso queira **instalar**:<br>
-    Digite `python3 INSTALAR.py` e aperte Enter.
-    O programa com interface gráfica terá um atalho na área de trabalho e
-    no menu Iniciar ou equivalente, e também poderá ser chamado executando
-    `augmentedsim_gui`.
-    A interface de
-    linha de comando poderá ser utilizada executando `augmentedsim_cli`.
+    - Digite `python3 INSTALAR.py` e aperte Enter.
+    - Para executar o programa com interface gráfica, utilize o atalho
+      na área de trabalho e
+      no menu Iniciar (ou equivalente), ou execute executando
+      `augmentedsim_gui`. A interface de
+      linha de comando estará disponível como `augmentedsim_cli`.
