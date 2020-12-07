@@ -21,9 +21,8 @@ na parte inferior do instalador.
 [download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
 1. Abra uma janela de um prompt de comando (CMD) ou Powershell dentro
-da pasta/diretório `augmented_sim`. <small>Para fazer isso, mantenha
-pressionada a tecla
-Shift e clique com
+da pasta descompactada. <small>Para fazer isso, abra a pasta no Windows,
+mantenha pressionada a tecla Shift e clique com
 o botão direito do mouse em um lugar vazio dentro da pasta. Escolha a opção
 de abrir o prompt de comando ou o Powershell.</small><br>
 Dentro da janela do prompt de comando ou Powershell:
@@ -66,7 +65,7 @@ outra versão.
 1. Faça
 [download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
-1. Abra uma janela de um terminal dentro do diretório `augmented_sim`.
+1. Abra uma janela de um terminal dentro do diretório descompactado.
 
   - Se preferir executar **do próprio diretório**,
     sem instalar:<br>
