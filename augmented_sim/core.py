@@ -100,7 +100,8 @@ class AugmentThread(threading.Thread):
                     w.write_row(row)
                     if self.report_progress:
                         self.report_progress(self.parser.progress())
-            print('Ok')
+                if self.report_progress:
+                    self.report_progress(100)
         except BaseException as e:
             if self.report_exception:
                 msg = exception_to_user_friendly_error_message(e)
