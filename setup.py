@@ -5,61 +5,47 @@ from setuptools import setup, find_packages
 import pathlib
 
 
+NAME = 'Augmented SIM'
+DESCRIPTION = 'Programa que adiciona colunas a uma tabela de óbitos' \
+              ' codificados segundo o SIM'
+PACKAGE_NAME = 'augmented_SIM'
+GIT_URL = 'https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim'
+
+
 here = pathlib.Path(__file__).parent.resolve()
-
-long_description = (here / 'README.md').read_text(encoding='utf-8')
-
-gitlab_url = 'https://gitlab.com/projeto-fm/mortalidadesp'
+LONG_DESCRIPTION = (here / 'README.md').read_text(encoding='utf-8')
+DEPENDENCIES = (here / 'requirements.txt') \
+                .read_text(encoding='utf-8').strip().split('\n')
 
 s = setup(
-    name='augmented_SIM',
-
+    name=PACKAGE_NAME,
     version='0.0.1.dev1',
-
-    description='Um programa que adiciona colunas a uma tabela de óbitos'
-                ' codificados segundo SIM',
-
-    long_description=long_description,
-
+    description=DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
+    url=GIT_URL,
 
-    url=gitlab_url,
-
-    author='FM-USP',
-    author_email='palotufo@usp.br',
+    # author='FM-USP',
+    # author_email='palotufo@usp.br',
 
     classifiers=[
         #  3 - Alpha; 4 - Beta; 5 - Production/Stable
         'Development Status :: 3 - Alpha',
-
         'Intended Audience :: Healthcare Industry',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Information Analysis',
-
         'License :: Other/Proprietary License',
-
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3 :: Only',
     ],
-
     keywords='SIM, mortality, healthcare, ICD',
 
-    # package_dir={'': 'augmented_sim'},
-
     packages=find_packages(),
-
     python_requires='>=3.6, <4',
-
-    install_requires=[
-        'dbfread>=2.0.7',
-        'tqdm>=4.54.0',
-        'beautifulsoup4>=4.9.3',
-        'PyQt5>=5.15.2',
-        'python_dateutil>=2.8.1',
-    ],
+    install_requires=DEPENDENCIES,
 
     entry_points={
         'console_scripts': [
@@ -80,18 +66,27 @@ s = setup(
 
 def create_shortcut(directory):
     import os
-    from pyshortcuts import make_shortcut
-    make_shortcut(
-        os.path.join(directory, 'augmentedsim_gui'),
-        name='Augmented SIM',
-        description='Adiciona colunas a uma tabela de dados de mortalidade.',
-        terminal=False
-    )
+    import pyshortcuts
+
+    # On Linux, add to some categoriess
+    df = pyshortcuts.linux.DESKTOP_FORM
+    add = 'Categories=Office;Spreadsheet;Database;MedicalSoftware;'
+    pyshortcuts.linux.DESKTOP_FORM = df.rstrip() + '\n' + add
+
+    cmd = os.path.join(directory, 'augmentedsim_gui')
+    kwargs = {
+        'name': NAME,
+        'description': DESCRIPTION,
+        'terminal': False
+    }
+    pyshortcuts.make_shortcut(cmd, desktop=True, startmenu=True, **kwargs)
 
 
 def _post_install(setup):
     def _post_install_actions():
-        create_shortcut(setup.command_obj['install'].install_scripts)
+        import sys
+        if 'install' in sys.argv[1:]:
+            create_shortcut(setup.command_obj['install'].install_scripts)
         print('Ok')
     _post_install_actions()
     return setup
