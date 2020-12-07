@@ -2,7 +2,6 @@
 
 import csv
 import dbfread
-import os
 
 from typing import Union
 
@@ -24,20 +23,20 @@ class TableReader:
                 format = 'CSV'
                 fd = open(file_name, 'r', encoding='utf-8-sig')
                 dialect = csv.Sniffer().sniff(fd.read(1024))
-                fd.seek(0, os.SEEK_END)
-                denominator = fd.tell()
                 fd.seek(0)
-                parser = csv.DictReader(iter(fd.readline, ''), dialect=dialect)
+                denominator = max(sum(bool(ll.strip()) for ll in fd) - 1, 1)
+                fd.seek(0)
+                parser = csv.DictReader(fd, dialect=dialect)
                 columns = parser.fieldnames
-                get_pos = (lambda fd: lambda: fd.tell())(fd)
+                self.fd = fd
             elif file_name.lower().endswith('.dbf'):
                 format = 'DBF'
                 parser = dbfread.DBF(file_name)
                 columns = parser.field_names[:]
                 denominator = parser.header.numrecords
-                get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
             else:
                 raise Exception('Formato não suportado.')
+            get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
             self.files.append(
                 [file_name, format, parser, columns, get_pos, 0, denominator]
             )
@@ -54,6 +53,7 @@ class TableReader:
                 self.read_count[file_name] += 1
                 f[-2] = min(den, get_pos())
                 yield row
+            f[-1] = get_pos()  # 100% even if denominator fails
         self.currently_reading = ''
         self.finished = True
 
