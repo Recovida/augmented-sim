@@ -182,13 +182,14 @@ class AugmentedSIM:
         def _report_conclusion():
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
+                print()  # fix cursor position
             elapsed = overall_pbar.format_dict['elapsed']
             if report_conclusion:
                 report_conclusion(elapsed)
             # Using an integer to get integer attributes later
             dt = relativedelta(seconds=elapsed)
             s = _format_elapsed_time(dt)
-            print(f'\nArquivo salvo (tempo decorrido: {s}).')
+            print(f'Arquivo salvo (tempo decorrido: {s}).')
 
         # Open output file
         thread = AugmentThread(

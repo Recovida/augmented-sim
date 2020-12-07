@@ -20,21 +20,22 @@ na parte inferior do instalador.
 1. Faça
 [download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
-1. Abra uma janela de um prompt de comando (CMD) ou Powershell dentro
-da pasta descompactada. <small>Para fazer isso, abra a pasta no Windows,
-mantenha pressionada a tecla Shift e clique com
-o botão direito do mouse em um lugar vazio dentro da pasta. Escolha a opção
-de abrir o prompt de comando ou o Powershell.</small><br>
-Dentro da janela do prompt de comando ou Powershell:
-  - Se preferir executar **do próprio diretório**,
-      sem instalar:<br>
-      ...
-  - Caso queira **instalar**:<br>
-      Digite `python setup.py install`
-      e aperte Enter.
-      O programa com interface gráfica poderá então ser executado chamando
-      `augmentedsim_gui`, e a interface de
-      linha de comando pode ser utilizada executando `augmentedsim_cli`.
+1. É possível instalar o programa ou executá-lo sem instalar:
+  - Se preferir executar **da própria pasta**:
+    - Clique duas vezes no script `PREPARAR` (arquivo `PREPARAR.py`).
+      Este passo poderá
+      levar alguns minutos, mas só será necessário
+      executá-lo uma vez nesta versão do programa
+      (para cada usuário de um computador).
+    - Clique duas vezes no script `EXECUTAR` (arquivo `EXECUTAR`.py).
+      O programa será aberto.
+  - Caso queira **instalar**:
+    - Clique duas vezes no script `INSTALAR` (arquivo `INSTALAR`.py).
+      O programa será instalado.
+    - Para executar o programa, use os atalhos no menu Iniciar ou na área
+      de trabalho.
+
+Uma interface de linha de comando estará disponível em `augmentedsim_gui`.
 
 
 #### macOS
@@ -69,18 +70,23 @@ outra versão.
 
   - Se preferir executar **do próprio diretório**,
     sem instalar:<br>
-    Digite `python3 pip install -r requirements.txt`
-    e aperte Enter (isto instalará apenas as dependências).
-    O programa com interface gráfica poderá então ser executado chamando
-    `./src/augmented_sim/augmented_sim_gui.py`, e a interface de
-    linha de comando estará
-    disponível em `./src/augmented_sim/augmented.py`, ambos a partir
-    deste diretório.
+    - Digite `python3 PREPARAR.py`
+      e aperte Enter (isto instalará apenas as dependências).
+      Este passo poderá
+      levar alguns minutos, mas só será necessário
+      executá-lo uma vez nesta versão do programa
+      (para cada usuário de um computador).
+    - Digite
+      `python3 EXECUTAR.py` e aperte Enter para executar o programa
+      com interface gráfica
+      (ou `python3 ./augmented_sim/augmented_sim_gui.py`).
+      Uma interface de linha de comando também estará
+      disponível: `python3 ./augmented_sim/augmented_sim_cli.py`.
 
   - Caso queira **instalar**:<br>
-    Digite `python3 setup.py install --user`
-    e aperte Enter (se desejar que a instalação seja feita para todos os
-    usuários, remova `--user` do comando anterior e execute-o como *root*).
-    O programa com interface gráfica poderá então ser executado chamando
-    `augmentedsim_gui`, e a interface de
-    linha de comando pode ser utilizada executando `augmentedsim_cli`.
+    Digite `python3 INSTALAR.py` e aperte Enter.
+    O programa com interface gráfica terá um atalho na área de trabalho e
+    no menu Iniciar ou equivalente, e também poderá ser chamado executando
+    `augmentedsim_gui`.
+    A interface de
+    linha de comando poderá ser utilizada executando `augmentedsim_cli`.

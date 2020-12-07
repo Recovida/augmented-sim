@@ -2,6 +2,15 @@
 # coding=utf-8
 
 import argparse
+import sys
+
+if vars(sys.modules[__name__])['__package__'] is None and \
+                                                    __name__ == '__main__':
+    # allow running from any folder
+    import pathlib
+    here = pathlib.Path(__file__).parent.parent.resolve()
+    sys.path.insert(1, str(here))
+
 
 from augmented_sim.core import AugmentedSIM
 
