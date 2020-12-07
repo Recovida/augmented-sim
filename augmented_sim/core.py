@@ -14,6 +14,7 @@ import threading
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from tqdm import tqdm
+from time import time
 from typing import List, Callable
 
 from augmented_sim.table_reader import TableReader
@@ -124,6 +125,8 @@ class AugmentedSIM:
                 report_exception: Callable[[BaseException, str], None] = None,
                 report_conclusion: Callable[[str], None] = None):
 
+        start_time = time()
+
         # Open input file
         parser = TableReader(self.input_file_names)
         cols = parser.columns[:]
@@ -140,13 +143,14 @@ class AugmentedSIM:
         # Progress
         progress = parser.progress()
         fmt = '{l_bar}{bar} {remaining}'
+        disable = 'pythonw' in sys.executable  # avoid crash on Windows
         overall_pbar = tqdm(
             total=progress[3], bar_format=fmt, colour='green',
-            desc='OVERALL',  position=0, leave=False
+            desc='OVERALL',  position=0, leave=False, disable=disable
         )
         current_pbar = tqdm(
             total=progress[1], bar_format=fmt, colour='green',
-            desc='CURRENT', position=1, leave=False
+            desc='CURRENT', position=1, leave=False, disable=disable
         )
 
         def _report_progress(progress):
@@ -183,7 +187,7 @@ class AugmentedSIM:
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
                 print()  # fix cursor position
-            elapsed = overall_pbar.format_dict['elapsed']
+            elapsed = time() - start_time
             if report_conclusion:
                 report_conclusion(elapsed)
             # Using an integer to get integer attributes later
