@@ -78,9 +78,21 @@ s = setup(
 )
 
 
+def create_shortcut(directory):
+    import os
+    from pyshortcuts import make_shortcut
+    make_shortcut(
+        os.path.join(directory, 'augmentedsim_gui'),
+        name='Augmented SIM',
+        description='Adiciona colunas a uma tabela de dados de mortalidade.',
+        terminal=False
+    )
+
+
 def _post_install(setup):
     def _post_install_actions():
-        print('OK')
+        create_shortcut(setup.command_obj['install'].install_scripts)
+        print('Ok')
     _post_install_actions()
     return setup
 
