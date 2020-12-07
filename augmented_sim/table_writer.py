@@ -9,7 +9,7 @@ class TableWriter:
         self.format = format.upper()
         self.file_name = file_name
         if format == 'CSV':
-            self.fd = open(self.file_name, 'w')
+            self.fd = open(self.file_name, 'w', newline='',)
             self.writer = csv.DictWriter(
                 self.fd,
                 columns,
