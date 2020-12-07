@@ -11,8 +11,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 gitlab_url = 'https://gitlab.com/projeto-fm/mortalidadesp'
 
-
-setup(
+s = setup(
     name='augmented_SIM',
 
     version='0.0.1.dev1',
@@ -77,3 +76,13 @@ setup(
     # },
 
 )
+
+
+def _post_install(setup):
+    def _post_install_actions():
+        print('OK')
+    _post_install_actions()
+    return setup
+
+
+setup = _post_install(s)
