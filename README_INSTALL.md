@@ -1,11 +1,7 @@
 # Augmented SIM - Instruções
 
-## Utilizando a última versão lançada
-
-[TO DO]
-
-## Utilizando a versão mais recente do repositório (possivelmente instável)
-
+Seguem as instruções para a instalação deste programa a partir da versão
+disponível no repositório.
 
 #### Windows
 
