@@ -95,10 +95,13 @@ class AugmentedSIMGUI(QObject):
             'Comma-Separated Values (*.csv)',
             options=options
         )
-        self.fill_outfile1(f)
+        if f:
+            if not f.lower().endswith('.csv'):
+                f += '.csv'
+            self.fill_outfile1(f)
 
     def fill_outfile1(self, file):
-        if file and os.path.isfile(file):
+        if file and os.path.isdir(os.path.dirname(file)):
             self.ui.edit_outfile1.setText(file)
 
     def _error_msg(self, title, message):
