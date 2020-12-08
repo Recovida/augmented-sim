@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
 import csv
 import dbfread
+import traceback
 
 from typing import Union
+
+
+class TableReadingError(ValueError):
+
+    def __init__(self, message, file_name, traceback=''):
+        super().__init__(message or f'Não foi possível ler “{file_name}”.')
+        self.message = message
+        self.file_name = file_name
+        self.traceback = traceback
 
 
 class TableReader:
@@ -19,24 +30,31 @@ class TableReader:
         self.finished = False
         for file_name in file_names:
             self.read_count[file_name] = 0
-            if file_name.lower().endswith('.csv'):
-                format = 'CSV'
-                fd = open(file_name, 'r', encoding='utf-8-sig')
-                dialect = csv.Sniffer().sniff(fd.read(1024))
-                fd.seek(0)
-                denominator = max(sum(bool(ll.strip()) for ll in fd) - 1, 1)
-                fd.seek(0)
-                parser = csv.DictReader(fd, dialect=dialect)
-                columns = parser.fieldnames
-                self.fd = fd
-            elif file_name.lower().endswith('.dbf'):
-                format = 'DBF'
-                parser = dbfread.DBF(file_name)
-                columns = parser.field_names[:]
-                denominator = parser.header.numrecords
-            else:
-                raise Exception('Formato não suportado.')
+            try:
+                if file_name.lower().endswith('.csv'):
+                    format = 'CSV'
+                    fd = open(file_name, 'r', encoding='utf-8-sig')
+                    dialect = csv.Sniffer().sniff(fd.read(1024))
+                    fd.seek(0)
+                    denominator = sum(bool(ll.strip()) for ll in fd) - 1
+                    fd.seek(0)
+                    parser = csv.DictReader(fd, dialect=dialect)
+                    columns = parser.fieldnames
+                    self.fd = fd
+                elif file_name.lower().endswith('.dbf'):
+                    format = 'DBF'
+                    parser = dbfread.DBF(file_name)
+                    columns = parser.field_names[:]
+                    denominator = parser.header.numrecords
+                else:
+                    msg = f'O arquivo “{file_name}” não é suportado.'
+                    raise TableReadingError(msg, file_name,
+                                            traceback.format_exc())
+            except Exception:
+                msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
+                raise TableReadingError(msg, file_name, traceback.format_exc())
             get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
+            denominator = max(denominator, 1)
             self.files.append(
                 [file_name, format, parser, columns, get_pos, 0, denominator]
             )
@@ -49,10 +67,14 @@ class TableReader:
         for f in self.files:
             file_name, format, parser, columns, get_pos, num, den = f
             self.currently_reading = file_name
-            for row in parser:
-                self.read_count[file_name] += 1
-                f[-2] = min(den, get_pos())
-                yield row
+            try:
+                for row in parser:
+                    self.read_count[file_name] += 1
+                    f[-2] = min(den, get_pos())
+                    yield row
+            except Exception:
+                msg = f'Houve um erro ao ler o arquivo “{file_name}”.'
+                raise TableReadingError(msg, file_name, traceback.format_exc())
             f[-1] = get_pos()  # 100% even if denominator fails
         self.currently_reading = ''
         self.finished = True

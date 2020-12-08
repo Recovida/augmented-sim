@@ -8,6 +8,8 @@ import platform
 
 
 NAME = 'Augmented SIM'
+VERSION = '0.0.1.dev1'
+YEAR = 2020
 DESCRIPTION = 'Programa que adiciona colunas a uma tabela de óbitos' \
               ' codificados segundo o SIM'
 PACKAGE_NAME = 'augmented_SIM'
@@ -24,7 +26,7 @@ windows = platform.system() == 'Windows'
 
 s = setup(
     name=PACKAGE_NAME,
-    version='0.0.1.dev1',
+    version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',

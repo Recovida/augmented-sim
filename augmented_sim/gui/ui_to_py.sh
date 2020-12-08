@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 -m PyQt5.uic.pyuic gui.ui -o gui.py
+pyside2-uic main.ui -o main.py
+pyside2-uic about.ui -o about.py

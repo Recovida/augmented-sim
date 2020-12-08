@@ -6,9 +6,6 @@ if sys.version_info < (3, 6):
     print('Este programa requer Python 3.6 ou superior.', file=sys.stderr)
     exit(1)
 
-import os.path
-
-import os
 import threading
 
 from dateutil.relativedelta import relativedelta
@@ -25,31 +22,6 @@ from augmented_sim.sim.age_augmenter import AgeAugmenter
 from augmented_sim.sim.death_cause_augmenter import DeathCauseAugmenter
 from augmented_sim.sim.death_date_augmenter import DeathDateAugmenter
 from augmented_sim.sim.neighbourhood_augmenter import NeighbourhoodAugmenter
-
-
-def exception_to_user_friendly_error_message(e):
-    import traceback
-    tb = traceback.format_exc()
-    if isinstance(e, FileNotFoundError):
-        return 'Arquivo/caminho inexistente:\n“%s”.' % e.filename
-    if isinstance(e, IsADirectoryError):
-        return 'O arquivo de saída não pode ser um diretório/pasta.'
-    if isinstance(e, PermissionError):
-        return 'Não é possível salvar o arquivo no local especificado.\n' \
-               'Verifique as permissões.'
-    if isinstance(e, OSError):
-        import errno
-        error = errno.errorcode.get(e.errno, '')
-        if error == 'ENOSPC':
-            return 'Espaço insuficiente para salvar o arquivo.'
-        elif error == 'EROFS':
-            return 'Não é possível salvar arquivos ' \
-                    'no local especificado: “%s”.' % e.filename
-        elif error.endswith('NAMETOOLONG'):
-            return 'O nome do arquivo é grande demais:\n“%s”.' % e.filename
-        else:
-            return os.strerror(e.errno)
-    return tb
 
 
 # Each new column comes after the column it depends on
@@ -108,10 +80,9 @@ class AugmentThread(threading.Thread):
                     self.report_progress(self.parser.progress())
             if self.report_conclusion:
                 self.report_conclusion()
-        except BaseException as e:
+        except Exception as e:
             if self.report_exception:
-                msg = exception_to_user_friendly_error_message(e)
-                self.report_exception(e, msg)
+                self.report_exception(e, e.message)
 
 
 class AugmentedSIM:
@@ -127,32 +98,6 @@ class AugmentedSIM:
 
         start_time = time()
 
-        # Open input file
-        parser = TableReader(self.input_file_names)
-        cols = parser.columns[:]
-
-        # Add new columns depending on the existing ones
-        for existing_column, new_columns in COLS_AFTER.items():
-            try:
-                idx = cols.index(existing_column)
-                for col in reversed(new_columns):
-                    cols.insert(idx + 1, col)
-            except ValueError:
-                pass
-
-        # Progress
-        progress = parser.progress()
-        fmt = '{l_bar}{bar} {remaining}'
-        disable = 'pythonw' in sys.executable  # avoid crash on Windows
-        overall_pbar = tqdm(
-            total=progress[3], bar_format=fmt, colour='green',
-            desc='OVERALL',  position=0, leave=False, disable=disable
-        )
-        current_pbar = tqdm(
-            total=progress[1], bar_format=fmt, colour='green',
-            desc='CURRENT', position=1, leave=False, disable=disable
-        )
-
         def _report_progress(progress):
             if report_progress:
                 report_progress(progress)
@@ -161,6 +106,8 @@ class AugmentedSIM:
             current_pbar.update(-current_pbar.n + progress[0])
 
         def _report_exception(exc, msg):
+            for bar in [overall_pbar, current_pbar]:
+                bar.close()
             print(msg)
             report_exception(exc, msg)
 
@@ -186,7 +133,8 @@ class AugmentedSIM:
         def _report_conclusion():
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
-                print()  # fix cursor position
+                if not bar.disable:
+                    print('\n')  # fix cursor position
             elapsed = time() - start_time
             if report_conclusion:
                 report_conclusion(elapsed)
@@ -194,6 +142,37 @@ class AugmentedSIM:
             dt = relativedelta(seconds=elapsed)
             s = _format_elapsed_time(dt)
             print(f'Arquivo salvo (tempo decorrido: {s}).')
+
+        # Open input file
+        try:
+            parser = TableReader(self.input_file_names)
+        except Exception as e:
+            _report_exception(e, e.message)
+            return
+
+        cols = parser.columns[:]
+
+        # Add new columns depending on the existing ones
+        for existing_column, new_columns in COLS_AFTER.items():
+            try:
+                idx = cols.index(existing_column)
+                for col in reversed(new_columns):
+                    cols.insert(idx + 1, col)
+            except ValueError:
+                pass
+
+        # Progress
+        progress = parser.progress()
+        fmt = '{l_bar}{bar} {remaining}'
+        disable = 'pythonw' in sys.executable  # avoid crash on Windows
+        overall_pbar = tqdm(
+            total=progress[3], bar_format=fmt, colour='green',
+            desc='OVERALL',  position=0, leave=False, disable=disable
+        )
+        current_pbar = tqdm(
+            total=progress[1], bar_format=fmt, colour='green',
+            desc='CURRENT', position=1, leave=False, disable=disable
+        )
 
         # Open output file
         thread = AugmentThread(

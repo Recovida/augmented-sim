@@ -5,10 +5,10 @@ import argparse
 import os.path
 import sys
 
-from PyQt5.QtGui import QKeyEvent, QKeySequence
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, \
-                            QMessageBox
+from PySide2.QtGui import QKeyEvent, QKeySequence
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, \
+                            QMessageBox, QDialog, QDialogButtonBox
 
 
 if vars(sys.modules[__name__])['__package__'] is None and \
@@ -19,7 +19,8 @@ if vars(sys.modules[__name__])['__package__'] is None and \
     sys.path.insert(1, str(here))
 
 
-from augmented_sim.gui.gui import Ui_MainWindow
+from augmented_sim.gui.main import Ui_MainWindow
+from augmented_sim.gui.about import Ui_AboutDialog
 from augmented_sim.core import AugmentedSIM
 
 
@@ -37,11 +38,11 @@ class DeleteFilter(QObject):
 
 class AugmentedSIMGUI(QObject):
 
-    overall_progress_signal = pyqtSignal(int)
-    current_progress_signal = pyqtSignal(int)
-    current_file_signal = pyqtSignal(str)
-    error_signal = pyqtSignal(str, str)
-    status_msg_signal = pyqtSignal(str)
+    overall_progress_signal = Signal(int)
+    current_progress_signal = Signal(int)
+    current_file_signal = Signal(str)
+    error_signal = Signal(str, str)
+    status_msg_signal = Signal(str)
 
     def __init__(self, augment_cls, input_files=None, output_file=None):
         super().__init__()
@@ -53,6 +54,7 @@ class AugmentedSIMGUI(QObject):
         self.ui.btn_file1.clicked.connect(lambda *a: self.choose_file1())
         self.ui.btn_outfile1.clicked.connect(lambda *a: self.choose_outfile1())
         self.ui.btn_execute.clicked.connect(lambda *a: self.execute())
+        self.ui.btn_about.clicked.connect(lambda *a: self.show_about())
         self.overall_progress_signal.connect(self.ui.pbar_overall.setValue)
         self.current_progress_signal.connect(self.ui.pbar_current.setValue)
         self.current_file_signal.connect(self.ui.label_current_file.setText)
@@ -68,8 +70,16 @@ class AugmentedSIMGUI(QObject):
             self.fill_file1(input_files)
         if output_file:
             self.fill_outfile1(output_file)
+        self.hide_progress()
         self.window.show()
         self.app.exec_()
+
+    def show_about(self):
+        w = QDialog(self.window)
+        ui = Ui_AboutDialog()
+        ui.setupUi(w)
+        ui.buttonBox.button(QDialogButtonBox.Close).setText('Fechar')
+        w.exec_()
 
     def choose_file1(self):
         options = QFileDialog.Options()
@@ -125,7 +135,8 @@ class AugmentedSIMGUI(QObject):
         if not (input_files and output_file):
             self.ui.label_msg.setText('')
             self._error_msg('Erro',
-                            'Escolha os arquivos e clique em Executar.')
+                            'Escolha os arquivos de entrada '
+                            'e o arquivo de saída.')
             return
         if output_file in input_files:
             self.ui.label_msg.setText('')
@@ -133,6 +144,7 @@ class AugmentedSIMGUI(QObject):
                             'O arquivo de saída não pode ser um dos '
                             'arquivos de entrada.')
             return
+        self.show_progress()
         aug = self.augment_cls(input_files, output_file)
         self.disable_widgets()
         self.ui.label_msg.setText('Executando operação…')
@@ -144,8 +156,12 @@ class AugmentedSIMGUI(QObject):
 
     def on_error(self, e, msg):
         self.status_msg_signal.emit('')
+        self.current_file_signal.emit('')
+        self.current_progress_signal.emit(0)
+        self.overall_progress_signal.emit(0)
         self.error_signal.emit('Erro', msg)
         self.enable_widgets()
+        self.hide_progress()
 
     def enable_widgets(self, enable=True):
         for w in self.widgets_to_disable:
@@ -162,6 +178,17 @@ class AugmentedSIMGUI(QObject):
             self.ui.label_msg.setText('O arquivo foi salvo.')
             self.enable_widgets()
             self.current_file_signal.emit('')
+
+    def show_progress(self, show=True):
+        widgets = [self.ui.pbar_overall,
+                   self.ui.pbar_current,
+                   self.ui.label_overall_progress,
+                   self.ui.label_current_progress]
+        for w in widgets:
+            w.setVisible(show)
+
+    def hide_progress(self):
+        self.show_progress(False)
 
 
 def main():
