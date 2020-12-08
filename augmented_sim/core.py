@@ -98,6 +98,18 @@ class AugmentedSIM:
 
         start_time = time()
 
+        # Progress
+        fmt = '{l_bar}{bar} {remaining}'
+        disable = 'pythonw' in sys.executable  # avoid crash on Windows
+        overall_pbar = tqdm(
+            bar_format=fmt, colour='green',
+            desc='OVERALL',  position=0, leave=False, disable=disable
+        )
+        current_pbar = tqdm(
+            bar_format=fmt, colour='green',
+            desc='CURRENT', position=1, leave=False, disable=disable
+        )
+
         def _report_progress(progress):
             if report_progress:
                 report_progress(progress)
@@ -151,6 +163,7 @@ class AugmentedSIM:
             return
 
         cols = parser.columns[:]
+        progress = parser.progress()
 
         # Add new columns depending on the existing ones
         for existing_column, new_columns in COLS_AFTER.items():
@@ -161,18 +174,8 @@ class AugmentedSIM:
             except ValueError:
                 pass
 
-        # Progress
-        progress = parser.progress()
-        fmt = '{l_bar}{bar} {remaining}'
-        disable = 'pythonw' in sys.executable  # avoid crash on Windows
-        overall_pbar = tqdm(
-            total=progress[3], bar_format=fmt, colour='green',
-            desc='OVERALL',  position=0, leave=False, disable=disable
-        )
-        current_pbar = tqdm(
-            total=progress[1], bar_format=fmt, colour='green',
-            desc='CURRENT', position=1, leave=False, disable=disable
-        )
+        overall_pbar.total = progress[3]
+        current_pbar.total = progress[1]
 
         # Open output file
         thread = AugmentThread(
