@@ -6,9 +6,10 @@ import os.path
 import sys
 
 from PySide2.QtGui import QKeyEvent, QKeySequence
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, Signal, QRect
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, \
-                            QMessageBox, QDialog, QDialogButtonBox
+                            QMessageBox, QDialog, QDialogButtonBox, QWidget, \
+                            QVBoxLayout, QScrollArea, QTextBrowser, QFrame
 
 
 if vars(sys.modules[__name__])['__package__'] is None and \
@@ -22,6 +23,7 @@ if vars(sys.modules[__name__])['__package__'] is None and \
 from augmented_sim.gui.main import Ui_MainWindow
 from augmented_sim.gui.about import Ui_AboutDialog
 from augmented_sim.core import AugmentedSIM
+from augmented_sim import PROGRAM_METADATA
 
 
 class DeleteFilter(QObject):
@@ -75,9 +77,37 @@ class AugmentedSIMGUI(QObject):
         self.app.exec_()
 
     def show_about(self):
+        # show window
         w = QDialog(self.window)
         ui = Ui_AboutDialog()
         ui.setupUi(w)
+        ui.text_browser_licence.setPlainText(
+            PROGRAM_METADATA.get('LICENCE_TEXT', '')
+        )
+        ui.text_browser_read_me.setMarkdown(
+            PROGRAM_METADATA.get('READ_ME', '')
+        )
+        ui.tabs = []
+        while ui.tabs_external_licences.count():
+            ui.tabs_external_licences.removeTab(0)
+        for name, contents in PROGRAM_METADATA.get('LICENCES', []):
+            tab = QWidget()
+            sa = QScrollArea(tab)
+            vl1 = QVBoxLayout(tab)
+            sa.setWidgetResizable(True)
+            sac = QWidget()
+            sac.setGeometry(QRect(0, 0, 492, 262))
+            vl2 = QVBoxLayout(sac)
+            text_browser = QTextBrowser(sac)
+            text_browser.setPlainText(contents)
+            text_browser.setFrameShape(QFrame.NoFrame)
+            vl2.addWidget(text_browser)
+            sa.setWidget(sac)
+            vl1.addWidget(sa)
+            vl1.setContentsMargins(0, 0, 0, 0)
+            vl2.setContentsMargins(0, 0, 0, 0)
+            ui.tabs_external_licences.addTab(tab, name)
+            ui.tabs.append((tab, vl1, sa, sac, vl1, vl2, text_browser))
         ui.buttonBox.button(QDialogButtonBox.Close).setText('Fechar')
         w.exec_()
 

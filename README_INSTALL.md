@@ -1,6 +1,7 @@
 # Augmented SIM - Instruções
 
-Seguem as instruções para a instalação deste programa a partir da versão
+Seguem as instruções para a instalação [deste programa](README.md)
+a partir da versão
 disponível no repositório.
 
 #### Windows
@@ -50,11 +51,11 @@ Se necessário, consulte a documentação para
   este passo. Se necessário, instale o Python utilizando o gerenciador
   de pacotes de sua distribuição (`apt`, `apt-get`, `yum`, `dnf`, etc.).
 
-1. Faça
+2. Faça
   [download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
   <br/><small>Obs.:  No Safari, é possível que a extração ocorra automaticamente.</small>
 
-1. Em um terminal, entre no diretório descompactado
+3. Em um terminal, entre no diretório descompactado
    acima (usando o comando `cd`).
 
   - Se preferir executar **do próprio diretório**,

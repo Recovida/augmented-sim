@@ -5,7 +5,7 @@ codificados de acordo com o *Sistema de Informação sobre Mortalidade* (SIM)
 e, a partir das informações disponíveis nas colunas já existentes,
 cria um único arquivo contendo todos os dados após o acréscimo de algumas
 colunas. Para instruções de instalação e uso, veja o arquivo
-[README_INSTALL.md](README_INSTALL.md).
+[README_INSTALL.md](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/blob/master/README_INSTALL.md).
 Para informações sobre o projeto do qual este
 programa faz parte, consulte o
 [repositório de índice](https://gitlab.com/projeto-fm-usp-mortalidade-sp/index).
@@ -19,6 +19,8 @@ tais como
 [SAS](https://www.sas.com/),
 [Stata](https://www.stata.com/) e
 [MiniTab](https://www.minitab.com/).
+
+<!-- ABOUT:END -->
 
 **Importante:**
 
@@ -171,7 +173,7 @@ estão presentes nos arquivos de entrada.
       <td align="center">3</td>
     </tr>
   </tbody>
-  </table>
+</table>
 
 - `GARBAGECODE`:
   indica o nível da

@@ -53,6 +53,9 @@ s = setup(
     packages=find_packages(),
     python_requires='>=3.6, <4',
     install_requires=DEPENDENCIES,
+    package_data={'':
+                    ['README.md', 'LICENCE.txt', 'augmented_sim/.licences/*']},
+    include_package_data=True,
 
     entry_points={
         'console_scripts': [
@@ -63,10 +66,10 @@ s = setup(
         ],
     },
 
-    # project_urls={  # Optional
-    #     'Bug Reports': gitlab_url + '/-/issues',
-    #     'Source': gitlab_url,
-    # },
+    project_urls={
+        'Bug Reports': GIT_URL + '/-/issues',
+        'Source': GIT_URL,
+    },
 
 )
 
