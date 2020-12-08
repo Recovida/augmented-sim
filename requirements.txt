@@ -1,5 +1,5 @@
 dbfread>=2.0.7
 tqdm>=4.54.0
-beautifulsoup4>=4.9.3
 PyQt5>=5.15.2
 python_dateutil>=2.8.1
+pyshortcuts>=1.7.1

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>890</width>
-    <height>379</height>
+    <height>318</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,24 +23,7 @@
    <locale language="Portuguese" country="Brazil"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout" rowstretch="4,1,1,1,1,1,1,1,1" columnstretch="2,5,2,0">
-    <item row="5" column="1" colspan="3">
-     <widget class="QProgressBar" name="pbar_current">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_current_progress">
-      <property name="text">
-       <string>Progresso no arquivo</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
+   <layout class="QGridLayout" name="gridLayout" rowstretch="4,4,4,4,4,4,0,0,0,0,0" columnstretch="2,5,2,0">
     <item row="0" column="3">
      <widget class="QPushButton" name="btn_file1">
       <property name="sizePolicy">
@@ -60,26 +43,20 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="0" colspan="4">
-     <widget class="QLabel" name="label_msg">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_outfile1">
       <property name="text">
-       <string/>
+       <string>Arquivo de saída (CSV)</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_overall_progress">
+    <item row="8" column="1" colspan="3">
+     <widget class="QLabel" name="label_current_file">
       <property name="text">
-       <string>Progresso geral</string>
+       <string/>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -96,35 +73,8 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1" colspan="3">
-     <widget class="QProgressBar" name="pbar_overall">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QListWidget" name="list_infile1">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="dragDropMode">
-       <enum>QAbstractItemView::InternalMove</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_outfile1">
-      <property name="text">
-       <string>Arquivo de saída (CSV)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
+    <item row="1" column="1" colspan="2">
+     <widget class="QLineEdit" name="edit_outfile1"/>
     </item>
     <item row="1" column="3">
      <widget class="QPushButton" name="btn_outfile1">
@@ -145,6 +95,19 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QListWidget" name="list_infile1">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::InternalMove</enum>
+      </property>
+     </widget>
+    </item>
     <item row="2" column="1" colspan="3">
      <widget class="QPushButton" name="btn_execute">
       <property name="text">
@@ -152,18 +115,61 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="1" colspan="3">
-     <widget class="QLabel" name="label_current_file">
+    <item row="5" column="1" colspan="3">
+     <widget class="QProgressBar" name="pbar_current">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="3">
+     <widget class="QProgressBar" name="pbar_overall">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_overall_progress">
       <property name="text">
-       <string/>
+       <string>Progresso geral</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QLineEdit" name="edit_outfile1"/>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_current_progress">
+      <property name="text">
+       <string>Progresso no arquivo</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QLabel" name="label_msg">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
