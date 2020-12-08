@@ -24,10 +24,10 @@ na parte inferior do instalador.
       levar alguns minutos, mas só será necessário
       executá-lo uma vez nesta versão do programa
       (para cada usuário de um computador).
-    - Clique duas vezes no script `EXECUTAR` (arquivo `EXECUTAR`.py).
+    - Clique duas vezes no script `EXECUTAR` (arquivo `EXECUTAR.py`).
       O programa será aberto.
   - Caso queira **instalar**:
-    - Clique duas vezes no script `INSTALAR` (arquivo `INSTALAR`.py).
+    - Clique duas vezes no script `INSTALAR` (arquivo `INSTALAR.py`).
       O programa será instalado.
     - Para executar o programa, use os atalhos no menu Iniciar ou na área
       de trabalho.

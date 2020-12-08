@@ -53,8 +53,8 @@ s = setup(
     packages=find_packages(),
     python_requires='>=3.6, <4',
     install_requires=DEPENDENCIES,
-    package_data={'':
-                    ['README.md', 'LICENCE.txt', 'augmented_sim/.licences/*']},
+    package_data={'augmented_sim':
+                    ['../README.md', '../LICENCE.txt', '.licences/*']},
     include_package_data=True,
 
     entry_points={
