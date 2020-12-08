@@ -24,7 +24,8 @@ def handle_table_writing_exceptions(function):
             function(*args, **kwargs)
         except FileNotFoundError as e:
             raise TableWritingError(
-                    f'Arquivo ou caminho inexistente:\n“{e.filename}”.',
+                    'Arquivo ou caminho inexistente ou '
+                    f'inválido:\n“{e.filename}”.',
                     e.filename, e
             )
         except IsADirectoryError as e:
