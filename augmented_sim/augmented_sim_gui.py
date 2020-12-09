@@ -43,7 +43,7 @@ class AugmentedSIMGUI(QObject):
     overall_progress_signal = Signal(int)
     current_progress_signal = Signal(int)
     current_file_signal = Signal(str)
-    error_signal = Signal(str, str)
+    error_signal = Signal(str, str, str)
     status_msg_signal = Signal(str)
 
     def __init__(self, augment_cls, input_files=None, output_file=None):
@@ -148,13 +148,14 @@ class AugmentedSIMGUI(QObject):
         if file and os.path.isdir(os.path.dirname(file)):
             self.ui.edit_outfile1.setText(os.path.abspath(file))
 
-    def _error_msg(self, title, message):
+    def _error_msg(self, title, message, details=''):
         msgbox = QMessageBox(
             QMessageBox.Critical,
             title, message,
             buttons=QMessageBox.Ok,
             parent=self.window
         )
+        msgbox.setDetailedText(details)
         msgbox.setStandardButtons(QMessageBox.Ok)
         msgbox.exec_()
 
@@ -187,12 +188,14 @@ class AugmentedSIMGUI(QObject):
             report_exception=self.on_error
         )
 
-    def on_error(self, e, msg):
+    def on_error(self, e):
+        msg = getattr(e, 'message', str(e))
+        details = getattr(e, 'details', '')
         self.status_msg_signal.emit('')
         self.current_file_signal.emit('')
         self.current_progress_signal.emit(0)
         self.overall_progress_signal.emit(0)
-        self.error_signal.emit('Erro', msg)
+        self.error_signal.emit('Erro', msg, details)
         self.enable_widgets()
         self.hide_progress()
 

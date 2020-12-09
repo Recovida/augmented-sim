@@ -3,18 +3,22 @@
 
 import csv
 import dbfread
-import traceback
 
 from typing import Union
 
 
 class TableReadingError(ValueError):
 
-    def __init__(self, message, file_name, traceback=''):
+    def __init__(self, message, file_name, orig_exception=None):
         super().__init__(message or f'Não foi possível ler “{file_name}”.')
         self.message = message
         self.file_name = file_name
-        self.traceback = traceback
+        self.orig_exception = orig_exception
+        self.details = ''
+        if orig_exception:
+            import traceback
+            tb = traceback.TracebackException.from_exception(orig_exception)
+            self.details = ''.join(tb.format())
 
 
 class TableReader:
@@ -50,11 +54,10 @@ class TableReader:
                     denominator = parser.header.numrecords
                 else:
                     msg = f'O arquivo “{file_name}” não é suportado.'
-                    raise TableReadingError(msg, file_name,
-                                            traceback.format_exc())
-            except Exception:
+                    raise TableReadingError(msg, file_name)
+            except Exception as e:
                 msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
-                raise TableReadingError(msg, file_name, traceback.format_exc())
+                raise TableReadingError(msg, file_name, e)
             get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
             denominator = max(denominator, 1)
             self.files.append(
@@ -74,9 +77,9 @@ class TableReader:
                     self.read_count[file_name] += 1
                     f[-2] = min(den, get_pos())
                     yield row
-            except Exception:
+            except Exception as e:
                 msg = f'Houve um erro ao ler o arquivo “{file_name}”.'
-                raise TableReadingError(msg, file_name, traceback.format_exc())
+                raise TableReadingError(msg, file_name, e)
             f[-1] = get_pos()  # 100% even if denominator fails
         self.currently_reading = ''
         self.finished = True
@@ -122,4 +125,4 @@ class TableReader:
             else:
                 return n, enc
         msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
-        raise TableReadingError(msg, file_name, traceback.format_exc())
+        raise TableReadingError(msg, file_name)

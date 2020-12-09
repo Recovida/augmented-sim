@@ -12,6 +12,11 @@ class TableWritingError(Exception):
         self.message = message
         self.file_name = file_name
         self.orig_exception = orig_exception
+        self.details = ''
+        if orig_exception:
+            import traceback
+            tb = traceback.TracebackException.from_exception(orig_exception)
+            self.details = ''.join(tb.format())
 
 
 def handle_table_writing_exceptions(function):

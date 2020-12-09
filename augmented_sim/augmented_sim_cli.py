@@ -24,17 +24,20 @@ def main():
 
     # Command-line arguments
     arg_parser = argparse.ArgumentParser(description=desc)
-    arg_parser.add_argument('output_file', type=argparse.FileType('w'),
+    arg_parser.add_argument('output_file', type=str,
                             help='output file name (CSV)')
     arg_parser.add_argument('input_files', nargs='+',
-                            type=argparse.FileType('rb'),
+                            type=str,
                             help='input file names (DBF or CSV)')
     a = arg_parser.parse_args()
-    for f in a.input_files + [a.output_file]:
-        f.close()
 
-    aug = AugmentedSIM([f.name for f in a.input_files], a.output_file.name)
-    aug.augment()
+    def on_exc(e):
+        msg = getattr(e, 'message', str(e))
+        details = getattr(e, 'details', '')
+        print('=====', msg, '\n', details, '\n\n')
+
+    aug = AugmentedSIM(a.input_files, a.output_file)
+    aug.augment(report_exception=on_exc)
 
 
 if __name__ == '__main__':

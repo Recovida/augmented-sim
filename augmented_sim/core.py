@@ -48,7 +48,7 @@ class AugmentThread(threading.Thread):
                  parser: TableReader.UNION_ALL_PARSERS,
                  cols: List[str],
                  report_progress: Callable[[List], None] = None,
-                 report_exception: Callable[[BaseException, str], None] = None,
+                 report_exception: Callable[[BaseException], None] = None,
                  report_conclusion: Callable[[], None] = None
                  ):
         super().__init__()
@@ -82,7 +82,7 @@ class AugmentThread(threading.Thread):
                 self.report_conclusion()
         except Exception as e:
             if self.report_exception:
-                self.report_exception(e, e.message)
+                self.report_exception(e)
 
 
 class AugmentedSIM:
@@ -93,7 +93,7 @@ class AugmentedSIM:
 
     def augment(self,
                 report_progress: Callable[[List], None] = None,
-                report_exception: Callable[[BaseException, str], None] = None,
+                report_exception: Callable[[BaseException], None] = None,
                 report_conclusion: Callable[[str], None] = None):
 
         start_time = time()
@@ -117,11 +117,10 @@ class AugmentedSIM:
             current_pbar.total = progress[1]
             current_pbar.update(-current_pbar.n + progress[0])
 
-        def _report_exception(exc, msg):
+        def _report_exception(exc):
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
-            print(msg)
-            report_exception(exc, msg)
+            report_exception(exc)
 
         def _format_elapsed_time(dt):
             # Report elapsed time (in Portuguese)
@@ -159,7 +158,7 @@ class AugmentedSIM:
         try:
             parser = TableReader(self.input_file_names)
         except Exception as e:
-            _report_exception(e, e.message)
+            _report_exception(e)
             return
 
         cols = parser.columns[:]
