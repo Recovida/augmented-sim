@@ -5,15 +5,17 @@ import argparse
 import os.path
 import sys
 
+from typing import Type, Optional, List, Tuple
+
 from PySide2.QtGui import QKeyEvent, QKeySequence
-from PySide2.QtCore import QObject, Signal, QRect
+from PySide2.QtCore import QObject, Signal, QRect, QEvent
 from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, \
-                            QMessageBox, QDialog, QDialogButtonBox, QWidget, \
-                            QVBoxLayout, QScrollArea, QTextBrowser, QFrame
+    QMessageBox, QDialog, QDialogButtonBox, QWidget, \
+    QVBoxLayout, QScrollArea, QTextBrowser, QFrame
 
 
 if vars(sys.modules[__name__])['__package__'] is None and \
-                                                    __name__ == '__main__':
+        __name__ == '__main__':
     # allow running from any folder
     import pathlib
     here = pathlib.Path(__file__).parent.parent.resolve()
@@ -28,7 +30,7 @@ from augmented_sim import PROGRAM_METADATA
 
 class DeleteFilter(QObject):
 
-    def eventFilter(self, o, e):
+    def eventFilter(self, o: QWidget, e: QEvent) -> bool:
         if isinstance(e, QKeyEvent) and e.type() == QKeyEvent.KeyPress \
                 and e.matches(QKeySequence.Delete):
             idx = o.currentRow()
@@ -46,7 +48,9 @@ class AugmentedSIMGUI(QObject):
     error_signal = Signal(str, str, str)
     status_msg_signal = Signal(str)
 
-    def __init__(self, augment_cls, input_files=None, output_file=None):
+    def __init__(self, augment_cls: Type,
+                 input_files: Optional[List[str]] = None,
+                 output_file: Optional[str] = None):
         super().__init__()
         self.augment_cls = augment_cls
         self.app = QApplication(sys.argv)
@@ -76,7 +80,7 @@ class AugmentedSIMGUI(QObject):
         self.window.show()
         self.app.exec_()
 
-    def show_about(self):
+    def show_about(self) -> None:
         # show window
         w = QDialog(self.window)
         ui = Ui_AboutDialog()
@@ -114,7 +118,7 @@ class AugmentedSIMGUI(QObject):
         ui.buttonBox.button(QDialogButtonBox.Close).setText('Fechar')
         w.exec_()
 
-    def choose_file1(self):
+    def choose_file1(self) -> None:
         options = QFileDialog.Options()
         names, _ = QFileDialog.getOpenFileNames(
             self.window, 'Arquivo de entrada 1', '',
@@ -123,7 +127,7 @@ class AugmentedSIMGUI(QObject):
         )
         self.fill_file1(names)
 
-    def fill_file1(self, files):
+    def fill_file1(self, files: List[str]) -> None:
         w = self.ui.list_infile1
         existing = {w.item(i).text() for i in range(w.count())}
         for f in files:
@@ -132,7 +136,7 @@ class AugmentedSIMGUI(QObject):
                 self.ui.list_infile1.addItem(f)
                 existing.add(f)
 
-    def choose_outfile1(self):
+    def choose_outfile1(self) -> None:
         options = QFileDialog.Options()
         f, _ = QFileDialog.getSaveFileName(
             self.window, 'Arquivo de saída', '',
@@ -144,11 +148,11 @@ class AugmentedSIMGUI(QObject):
                 f += '.csv'
             self.fill_outfile1(f)
 
-    def fill_outfile1(self, file):
+    def fill_outfile1(self, file: Optional[str]) -> None:
         if file and os.path.isdir(os.path.dirname(file)):
             self.ui.edit_outfile1.setText(os.path.abspath(file))
 
-    def _error_msg(self, title, message, details=''):
+    def _error_msg(self, title: str, message: str, details: str = '') -> None:
         msgbox = QMessageBox(
             QMessageBox.Critical,
             title, message,
@@ -159,7 +163,7 @@ class AugmentedSIMGUI(QObject):
         msgbox.setStandardButtons(QMessageBox.Ok)
         msgbox.exec_()
 
-    def execute(self):
+    def execute(self) -> None:
         w = self.ui.list_infile1
         input_files = [w.item(i).text() for i in range(w.count())]
         output_file = self.ui.edit_outfile1.text()
@@ -188,7 +192,7 @@ class AugmentedSIMGUI(QObject):
             report_exception=self.on_error
         )
 
-    def on_error(self, e):
+    def on_error(self, e: BaseException) -> None:
         msg = getattr(e, 'message', str(e))
         details = getattr(e, 'details', '')
         self.status_msg_signal.emit('')
@@ -199,23 +203,24 @@ class AugmentedSIMGUI(QObject):
         self.enable_widgets()
         self.hide_progress()
 
-    def enable_widgets(self, enable=True):
+    def enable_widgets(self, enable: bool = True) -> None:
         for w in self.widgets_to_disable:
             w.setEnabled(enable)
 
-    def disable_widgets(self):
+    def disable_widgets(self) -> None:
         self.enable_widgets(False)
 
-    def update_progress(self, progress):
-        self.current_progress_signal.emit(int((100*progress[0]) / progress[1]))
-        self.overall_progress_signal.emit(int((100*progress[2]) / progress[3]))
-        self.current_file_signal.emit(progress[-1] or '')
-        if progress[2] == progress[3]:
+    def update_progress(self, p: Tuple[int, int, int, int, Optional[str]]) \
+            -> None:
+        self.current_progress_signal.emit(int((100 * p[0]) / p[1]))
+        self.overall_progress_signal.emit(int((100 * p[2]) / p[3]))
+        self.current_file_signal.emit(p[-1] or '')
+        if p[2] == p[3]:
             self.ui.label_msg.setText('O arquivo foi salvo.')
             self.enable_widgets()
             self.current_file_signal.emit('')
 
-    def show_progress(self, show=True):
+    def show_progress(self, show: bool = True) -> None:
         widgets = [self.ui.pbar_overall,
                    self.ui.pbar_current,
                    self.ui.label_overall_progress,
@@ -223,11 +228,11 @@ class AugmentedSIMGUI(QObject):
         for w in widgets:
             w.setVisible(show)
 
-    def hide_progress(self):
+    def hide_progress(self) -> None:
         self.show_progress(False)
 
 
-def main():
+def main() -> None:
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('output_file', nargs='?',
                             help='output file name (CSV)')

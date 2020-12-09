@@ -1,13 +1,14 @@
-#!/usr/bin/env python3
 # coding=utf-8
 
+from typing import Optional, Callable, Any, List, Dict, Union
 import csv
 import os
 
 
 class TableWritingError(Exception):
 
-    def __init__(self, message, file_name, orig_exception=None):
+    def __init__(self, message: str, file_name: str,
+                 orig_exception: Optional[BaseException] = None):
         super().__init__(message or f'Não foi possível salvar “{file_name}”.')
         self.message = message
         self.file_name = file_name
@@ -19,8 +20,8 @@ class TableWritingError(Exception):
             self.details = ''.join(tb.format())
 
 
-def handle_table_writing_exceptions(function):
-    def f(*args, **kwargs):
+def handle_table_writing_exceptions(function: Callable) -> Callable:
+    def f(*args, **kwargs) -> Any:
         if hasattr(args[0], 'file_name'):
             file_name = args[0].file_name
         else:  # constructor of TableWriter
@@ -29,20 +30,20 @@ def handle_table_writing_exceptions(function):
             function(*args, **kwargs)
         except FileNotFoundError as e:
             raise TableWritingError(
-                    'Arquivo ou caminho inexistente ou '
-                    f'inválido:\n“{e.filename}”.',
-                    e.filename, e
+                'Arquivo ou caminho inexistente ou '
+                f'inválido:\n“{e.filename}”.',
+                e.filename, e
             )
         except IsADirectoryError as e:
             raise TableWritingError(
-                    'O arquivo de saída não pode ser um diretório/pasta.',
-                    e.filename, e
+                'O arquivo de saída não pode ser um diretório/pasta.',
+                e.filename, e
             )
         except PermissionError as e:
             raise TableWritingError(
-                    'Não é possível salvar o arquivo no local especificado.'
-                    '\nVerifique as permissões.',
-                    e.filename, e
+                'Não é possível salvar o arquivo no local especificado.'
+                '\nVerifique as permissões.',
+                e.filename, e
             )
         except OSError as e:
             import errno
@@ -63,7 +64,7 @@ def handle_table_writing_exceptions(function):
 class TableWriter:
 
     @handle_table_writing_exceptions
-    def __init__(self, format, columns, file_name):
+    def __init__(self, format: str, columns: List[str], file_name: str):
         self.file_name = file_name
         self.format = format.upper()
         if format not in ['CSV']:
@@ -89,9 +90,9 @@ class TableWriter:
             self.fd.close()
 
     @handle_table_writing_exceptions
-    def write_header(self):
+    def write_header(self) -> None:
         self.writer.writeheader()
 
     @handle_table_writing_exceptions
-    def write_row(self, row):
+    def write_row(self, row: Dict[str, Union[str, int, float]]) -> None:
         self.writer.writerow(row)

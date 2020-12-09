@@ -3,6 +3,8 @@
 import bisect
 import re
 
+from typing import List
+
 
 garbage = {
     1:
@@ -80,7 +82,7 @@ for level, s in garbage.items():
         levels[level]['end'].insert(pos, end)
 
 
-def print_list(elements, limit=68):
+def print_list(elements: List[str], limit: int = 68) -> None:
     s = ''
     for element in elements:
         p = f"'{element}', "

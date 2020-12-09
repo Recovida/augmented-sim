@@ -10,7 +10,7 @@ here = pathlib.Path(__file__).parent.resolve()
 windows = platform.system() == 'Windows'
 
 
-def show_msg(*args, **kwargs):
+def show_msg(*args, **kwargs) -> None:
     print(*args, **kwargs)
     if windows:
         print('Pressione Enter para fechar.')

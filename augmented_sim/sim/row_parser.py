@@ -3,7 +3,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
-from typing import Optional
+from typing import Optional, Dict
 
 
 class SIMRowParser:
@@ -49,7 +49,7 @@ class SIMRowParser:
             return None
 
     @classmethod
-    def parse_row(cls, row):
+    def parse_row(cls, row: Dict) -> Dict:
         converters = {
             'DTOBITO': cls.parse_date,
             'IDADE': cls.parse_age,

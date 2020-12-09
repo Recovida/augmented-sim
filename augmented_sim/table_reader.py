@@ -4,12 +4,13 @@
 import csv
 import dbfread
 
-from typing import Union
+from typing import Union, Optional, Iterator, Tuple, Dict
 
 
 class TableReadingError(ValueError):
 
-    def __init__(self, message, file_name, orig_exception=None):
+    def __init__(self, message: str, file_name: str,
+                 orig_exception: Optional[BaseException] = None):
         super().__init__(message or f'Não foi possível ler “{file_name}”.')
         self.message = message
         self.file_name = file_name
@@ -67,7 +68,7 @@ class TableReader:
                 if column not in self.columns:
                     self.columns.append(column)
 
-    def parse(self):
+    def parse(self) -> Iterator[Dict[str, Union[str, int, float]]]:
         self.finished = False
         for f in self.files:
             file_name, format, parser, columns, get_pos, num, den = f
@@ -90,7 +91,7 @@ class TableReader:
                 pass
             self.fd = None
 
-    def progress(self):
+    def progress(self) -> Tuple[int, int, int, int, Optional[str]]:
         overall_num = 0
         overall_den = 0
         current = None
@@ -108,7 +109,8 @@ class TableReader:
                 current = (overall_num and 1, 1)
             return (*current, overall_num, overall_den, self.currently_reading)
 
-    def _count_lines_and_guess_encoding(self, file_name):
+    def _count_lines_and_guess_encoding(self, file_name: str) -> \
+            Tuple[int, str]:
         encodings = [
             'UTF-8-sig', 'UTF-8', 'UTF-16-BE', 'UTF-16-LE',
             'CP1252', 'ISO-8859-15'

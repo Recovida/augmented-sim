@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from tqdm import tqdm
 from time import time
-from typing import List, Callable
+from typing import List, Callable, Union
 
 from augmented_sim.table_reader import TableReader
 from augmented_sim.table_writer import TableWriter
@@ -59,7 +59,7 @@ class AugmentThread(threading.Thread):
         self.report_exception = report_exception
         self.report_conclusion = report_conclusion
 
-    def run(self):
+    def run(self) -> None:
         self.exception = None
         try:
             if self.report_progress:
@@ -87,14 +87,14 @@ class AugmentThread(threading.Thread):
 
 class AugmentedSIM:
 
-    def __init__(self, input_file_names, output_file_name):
+    def __init__(self, input_file_names: str, output_file_name: str):
         self.input_file_names = input_file_names
         self.output_file_name = output_file_name
 
     def augment(self,
                 report_progress: Callable[[List], None] = None,
                 report_exception: Callable[[BaseException], None] = None,
-                report_conclusion: Callable[[str], None] = None):
+                report_conclusion: Callable[[str], None] = None) -> None:
 
         start_time = time()
 
@@ -103,26 +103,26 @@ class AugmentedSIM:
         disable = 'pythonw' in sys.executable  # avoid crash on Windows
         overall_pbar = tqdm(
             bar_format=fmt, colour='green',
-            desc='OVERALL',  position=0, leave=False, disable=disable
+            desc='OVERALL', position=0, leave=False, disable=disable
         )
         current_pbar = tqdm(
             bar_format=fmt, colour='green',
             desc='CURRENT', position=1, leave=False, disable=disable
         )
 
-        def _report_progress(progress):
+        def _report_progress(progress: Union[int, float]) -> None:
             if report_progress:
                 report_progress(progress)
             overall_pbar.update(-overall_pbar.n + progress[2])
             current_pbar.total = progress[1]
             current_pbar.update(-current_pbar.n + progress[0])
 
-        def _report_exception(exc):
+        def _report_exception(exc: str) -> None:
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
             report_exception(exc)
 
-        def _format_elapsed_time(dt):
+        def _format_elapsed_time(dt: relativedelta) -> str:
             # Report elapsed time (in Portuguese)
             t_str = []
             expr = [
@@ -141,7 +141,7 @@ class AugmentedSIM:
                 t_str = ['0s']
             return ''.join(t_str)
 
-        def _report_conclusion():
+        def _report_conclusion() -> None:
             for bar in [overall_pbar, current_pbar]:
                 bar.close()
                 if not bar.disable:

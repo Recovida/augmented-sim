@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from bs4 import BeautifulSoup as BS
+from typing import List
 
 import bisect
 import re
@@ -44,7 +45,7 @@ for row in table.tbody.find_all('tr'):
         levels[level]['values'].insert(pos, cidbr)
 
 
-def print_list(elements, limit=74):
+def print_list(elements: List, limit: int = 74) -> None:
     s = ''
     for element in elements:
         p = f"'{element}', "

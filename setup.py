@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# coding: utf-8
+# flake8: noqa
 
 from setuptools import setup, find_packages
 
@@ -19,7 +21,7 @@ GIT_URL = 'https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim'
 here = pathlib.Path(__file__).parent.resolve()
 LONG_DESCRIPTION = (here / 'README.md').read_text(encoding='utf-8')
 DEPENDENCIES = (here / 'requirements.txt') \
-                .read_text(encoding='utf-8').strip().split('\n')
+    .read_text(encoding='utf-8').strip().split('\n')
 
 here = pathlib.Path(__file__).parent.resolve()
 windows = platform.system() == 'Windows'

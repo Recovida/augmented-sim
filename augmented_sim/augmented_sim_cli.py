@@ -5,7 +5,7 @@ import argparse
 import sys
 
 if vars(sys.modules[__name__])['__package__'] is None and \
-                                                    __name__ == '__main__':
+        __name__ == '__main__':
     # allow running from any folder
     import pathlib
     here = pathlib.Path(__file__).parent.parent.resolve()
@@ -15,7 +15,7 @@ if vars(sys.modules[__name__])['__package__'] is None and \
 from augmented_sim.core import AugmentedSIM
 
 
-def main():
+def main() -> None:
     desc = '''
     This program reads a DBF or CSV file containing death causes encoded
     according to "Sistema de Informação sobre Mortalidade" (SIM).
@@ -31,7 +31,7 @@ def main():
                             help='input file names (DBF or CSV)')
     a = arg_parser.parse_args()
 
-    def on_exc(e):
+    def on_exc(e: BaseException) -> None:
         msg = getattr(e, 'message', str(e))
         details = getattr(e, 'details', '')
         print('=====', msg, '\n', details, '\n\n')
