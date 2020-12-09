@@ -81,11 +81,14 @@ class AugmentedSIMGUI(QObject):
         w = QDialog(self.window)
         ui = Ui_AboutDialog()
         ui.setupUi(w)
-        ui.text_browser_licence.setPlainText(
+        ui.text_browser_licence.setMarkdown(
             PROGRAM_METADATA.get('LICENCE_TEXT', '')
         )
         ui.text_browser_read_me.setMarkdown(
             PROGRAM_METADATA.get('READ_ME', '')
+        )
+        ui.text_browser_project.setMarkdown(
+            PROGRAM_METADATA.get('PROJECT_DESCRIPTION', '')
         )
         ui.tabs = []
         while ui.tabs_external_licences.count():
@@ -99,7 +102,7 @@ class AugmentedSIMGUI(QObject):
             sac.setGeometry(QRect(0, 0, 492, 262))
             vl2 = QVBoxLayout(sac)
             text_browser = QTextBrowser(sac)
-            text_browser.setPlainText(contents)
+            text_browser.setMarkdown(contents)
             text_browser.setFrameShape(QFrame.NoFrame)
             vl2.addWidget(text_browser)
             sa.setWidget(sac)

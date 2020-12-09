@@ -1,5 +1,7 @@
 # Augmented SIM
 
+<!-- ABOUT:BEGIN -->
+
 Este programa lê um conjunto de tabelas (CSV ou DBF) com dados de óbitos
 codificados de acordo com o *Sistema de Informação sobre Mortalidade* (SIM)
 e, a partir das informações disponíveis nas colunas já existentes,

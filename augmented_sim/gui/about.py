@@ -119,19 +119,24 @@ class Ui_AboutDialog(object):
         self.tab_3.setObjectName(u"tab_3")
         self.verticalLayout_5 = QVBoxLayout(self.tab_3)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.label_project = QLabel(self.tab_3)
-        self.label_project.setObjectName(u"label_project")
+        self.scrollArea_4 = QScrollArea(self.tab_3)
+        self.scrollArea_4.setObjectName(u"scrollArea_4")
+        self.scrollArea_4.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_4 = QWidget()
+        self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 514, 311))
+        self.verticalLayout_10 = QVBoxLayout(self.scrollAreaWidgetContents_4)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.text_browser_project = QTextBrowser(self.scrollAreaWidgetContents_4)
+        self.text_browser_project.setObjectName(u"text_browser_project")
+        self.text_browser_project.setFrameShape(QFrame.NoFrame)
 
-        self.verticalLayout_5.addWidget(self.label_project)
+        self.verticalLayout_10.addWidget(self.text_browser_project)
 
-        self.label_index_link = QLabel(self.tab_3)
-        self.label_index_link.setObjectName(u"label_index_link")
+        self.scrollArea_4.setWidget(self.scrollAreaWidgetContents_4)
 
-        self.verticalLayout_5.addWidget(self.label_index_link)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_5.addItem(self.verticalSpacer_2)
+        self.verticalLayout_5.addWidget(self.scrollArea_4)
 
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_2 = QWidget()
@@ -198,8 +203,6 @@ class Ui_AboutDialog(object):
         self.label_version.setText(QCoreApplication.translate("AboutDialog", u"v0.0.0 (0000)", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("AboutDialog", u"Programa", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("AboutDialog", u"Licen\u00e7a", None))
-        self.label_project.setText(QCoreApplication.translate("AboutDialog", u"{INFORMA\u00c7\u00c3O SOBRE PROJETO AQUI}", None))
-        self.label_index_link.setText(QCoreApplication.translate("AboutDialog", u"{LINK PARA REPOSIT\u00d3RIO-\u00cdNDICE}", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("AboutDialog", u"Desenvolvimento", None))
         self.textBrowser.setHtml(QCoreApplication.translate("AboutDialog", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

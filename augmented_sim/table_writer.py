@@ -51,7 +51,7 @@ def handle_table_writing_exceptions(function):
                 msg = f'O nome do arquivo é grande demais:\n“{e.filename}”.'
             raise TableWritingError(msg, file_name, e)
         except BaseException as e:
-            raise TableWritingError('', file_name, e)
+            raise TableWritingError(str(e), file_name, e)
     return f
 
 

@@ -28,15 +28,17 @@ class TableReader:
         self.read_count = {}
         self.currently_reading = ''
         self.finished = False
+        self.fd = None
         for file_name in file_names:
             self.read_count[file_name] = 0
             try:
                 if file_name.lower().endswith('.csv'):
                     format = 'CSV'
-                    fd = open(file_name, 'r', encoding='utf-8-sig')
+                    n, enc = self._count_lines_and_guess_encoding(file_name)
+                    denominator = n - 1  # excluding header
+                    fd = open(file_name, 'r', encoding=enc)
                     dialect = csv.Sniffer().sniff(fd.read(1024))
                     fd.seek(0)
-                    denominator = sum(bool(ll.strip()) for ll in fd) - 1
                     fd.seek(0)
                     parser = csv.DictReader(fd, dialect=dialect)
                     columns = parser.fieldnames
@@ -78,6 +80,12 @@ class TableReader:
             f[-1] = get_pos()  # 100% even if denominator fails
         self.currently_reading = ''
         self.finished = True
+        if self.fd:
+            try:
+                self.fd.close()
+            except Exception:
+                pass
+            self.fd = None
 
     def progress(self):
         overall_num = 0
@@ -96,3 +104,22 @@ class TableReader:
             if current is None:
                 current = (overall_num and 1, 1)
             return (*current, overall_num, overall_den, self.currently_reading)
+
+    def _count_lines_and_guess_encoding(self, file_name):
+        encodings = [
+            'UTF-8-sig', 'UTF-8', 'UTF-16-BE', 'UTF-16-LE',
+            'CP1252', 'ISO-8859-15'
+        ]  # the last ones are common in Brazil (on Windows)
+        for enc in encodings:
+            try:
+                with open(file_name, 'r', encoding=enc) as fd:
+                    first = fd.readline()
+                    if not set(first).intersection(set(',;:- \t')):
+                        continue
+                    n = 1 + sum(bool(ll.strip()) for ll in fd)
+            except UnicodeDecodeError:
+                pass
+            else:
+                return n, enc
+        msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
+        raise TableReadingError(msg, file_name, traceback.format_exc())

@@ -315,6 +315,8 @@ class DeathCauseAugmenter(Augmenter):
 
     @classmethod
     def get_new_values(cls, row: Dict) -> Dict:
+        if 'CAUSABAS' not in row:
+            return {}
         icd = row.get('CAUSABAS', None)
         if not icd:
             return {
