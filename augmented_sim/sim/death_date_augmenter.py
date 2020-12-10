@@ -52,6 +52,6 @@ class DeathDateAugmenter(Augmenter):
             'DIA': d.day,
             'MES': d.month,
             'ANO': d.year,
-            'ANOEPI': d.year,
-            'SEMANAEPI': d.year,
+            'ANOEPI': epi_year,
+            'SEMANAEPI': epi_week,
         }
