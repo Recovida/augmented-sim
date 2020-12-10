@@ -38,16 +38,16 @@ class Ui_AboutDialog(object):
         self.widget_4.setObjectName(u"widget_4")
         self.verticalLayout_2 = QVBoxLayout(self.widget_4)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label = QLabel(self.widget_4)
-        self.label.setObjectName(u"label")
+        self.label_name = QLabel(self.widget_4)
+        self.label_name.setObjectName(u"label_name")
         font = QFont()
         font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
-        self.label.setFont(font)
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label_name.setFont(font)
+        self.label_name.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_2.addWidget(self.label)
+        self.verticalLayout_2.addWidget(self.label_name)
 
         self.label_version = QLabel(self.widget_4)
         self.label_version.setObjectName(u"label_version")
@@ -198,9 +198,9 @@ class Ui_AboutDialog(object):
     # setupUi
 
     def retranslateUi(self, AboutDialog):
-        AboutDialog.setWindowTitle(QCoreApplication.translate("AboutDialog", u"Sobre Augmented SIM", None))
-        self.label.setText(QCoreApplication.translate("AboutDialog", u"Augmented SIM", None))
-        self.label_version.setText(QCoreApplication.translate("AboutDialog", u"v0.0.0 (0000)", None))
+        AboutDialog.setWindowTitle(QCoreApplication.translate("AboutDialog", u"Sobre {Nome do programa}", None))
+        self.label_name.setText(QCoreApplication.translate("AboutDialog", u"{Nome do programa}", None))
+        self.label_version.setText(QCoreApplication.translate("AboutDialog", u"{Vers\u00e3o do programa}", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("AboutDialog", u"Programa", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("AboutDialog", u"Licen\u00e7a", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("AboutDialog", u"Desenvolvimento", None))

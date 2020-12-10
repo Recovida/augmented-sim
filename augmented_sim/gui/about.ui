@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sobre Augmented SIM</string>
+   <string>Sobre {Nome do programa}</string>
   </property>
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>
@@ -40,7 +40,7 @@
        <widget class="QWidget" name="widget_4" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label_name">
            <property name="font">
             <font>
              <pointsize>14</pointsize>
@@ -49,7 +49,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Augmented SIM</string>
+            <string>{Nome do programa}</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -59,7 +59,7 @@
          <item>
           <widget class="QLabel" name="label_version">
            <property name="text">
-            <string>v0.0.0 (0000)</string>
+            <string>{Versão do programa}</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

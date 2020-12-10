@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Augmented SIM</string>
+   <string>{Nome do Programa}</string>
   </property>
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>
@@ -230,7 +230,8 @@
           <string>Fechar</string>
          </property>
          <property name="icon">
-          <iconset theme="exit"/>
+          <iconset theme="exit">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>

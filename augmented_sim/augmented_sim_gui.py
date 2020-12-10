@@ -57,6 +57,7 @@ class AugmentedSIMGUI(QObject):
         self.window = QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
+        self.window.setWindowTitle(PROGRAM_METADATA.get('NAME', 'x'))
         self.ui.btn_file1.clicked.connect(lambda *a: self.choose_file1())
         self.ui.btn_outfile1.clicked.connect(lambda *a: self.choose_outfile1())
         self.ui.btn_execute.clicked.connect(lambda *a: self.execute())
@@ -83,8 +84,14 @@ class AugmentedSIMGUI(QObject):
     def show_about(self) -> None:
         # show window
         w = QDialog(self.window)
+        name = PROGRAM_METADATA.get('NAME', '')
+        version = PROGRAM_METADATA.get('VERSION', '')
+        year = PROGRAM_METADATA.get('YEAR', '')
         ui = Ui_AboutDialog()
         ui.setupUi(w)
+        w.setWindowTitle('Sobre ' + name)
+        ui.label_name.setText(name)
+        ui.label_version.setText(f'{version} ({year})')
         ui.text_browser_licence.setMarkdown(
             PROGRAM_METADATA.get('LICENCE_TEXT', '')
         )

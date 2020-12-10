@@ -164,7 +164,13 @@ class Ui_MainWindow(object):
 
         self.btn_close = QPushButton(self.widget)
         self.btn_close.setObjectName(u"btn_close")
-        icon3 = QIcon(QIcon.fromTheme(u"exit"))
+        icon3 = QIcon()
+        iconThemeName = u"exit"
+        if QIcon.hasThemeIcon(iconThemeName):
+            icon3 = QIcon.fromTheme(iconThemeName)
+        else:
+            icon3.addFile(u".", QSize(), QIcon.Normal, QIcon.Off)
+        
         self.btn_close.setIcon(icon3)
 
         self.horizontalLayout.addWidget(self.btn_close)
@@ -188,7 +194,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Augmented SIM", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"{Nome do Programa}", None))
         self.btn_execute.setText(QCoreApplication.translate("MainWindow", u"Gerar arquivo de sa\u00edda com as novas colunas", None))
         self.label_msg.setText("")
         self.btn_file1.setText(QCoreApplication.translate("MainWindow", u"Incluir...", None))
