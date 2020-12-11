@@ -17,12 +17,13 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(890, 358)
+        MainWindow.resize(890, 367)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setWindowTitle(u"{Nome do Programa}")
         MainWindow.setLocale(QLocale(QLocale.Portuguese, QLocale.Brazil))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -194,17 +195,17 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"{Nome do Programa}", None))
-        self.btn_execute.setText(QCoreApplication.translate("MainWindow", u"Gerar arquivo de sa\u00edda com as novas colunas", None))
+        self.btn_execute.setText(QCoreApplication.translate("MainWindow", u"generate", None))
         self.label_msg.setText("")
-        self.btn_file1.setText(QCoreApplication.translate("MainWindow", u"Incluir...", None))
-        self.label_overall_progress.setText(QCoreApplication.translate("MainWindow", u"Progresso geral", None))
-        self.label_current_progress.setText(QCoreApplication.translate("MainWindow", u"Progresso no arquivo", None))
+        self.btn_file1.setText(QCoreApplication.translate("MainWindow", u"add", None))
+        self.label_overall_progress.setText(QCoreApplication.translate("MainWindow", u"overall-progress", None))
+        self.label_current_progress.setText(QCoreApplication.translate("MainWindow", u"current-progress", None))
         self.label_current_file.setText("")
-        self.label_file1.setText(QCoreApplication.translate("MainWindow", u"Arquivos de entrada (DBF/CSV)", None))
-        self.label_outfile1.setText(QCoreApplication.translate("MainWindow", u"Arquivo de sa\u00edda (CSV)", None))
-        self.btn_outfile1.setText(QCoreApplication.translate("MainWindow", u"Escolher...", None))
-        self.btn_about.setText(QCoreApplication.translate("MainWindow", u"Sobre", None))
-        self.btn_close.setText(QCoreApplication.translate("MainWindow", u"Fechar", None))
+        self.label_file1.setText(QCoreApplication.translate("MainWindow", u"input-files", None))
+        self.label_outfile1.setText(QCoreApplication.translate("MainWindow", u"output-file", None))
+        self.btn_outfile1.setText(QCoreApplication.translate("MainWindow", u"choose", None))
+        self.btn_about.setText(QCoreApplication.translate("MainWindow", u"about", None))
+        self.btn_close.setText(QCoreApplication.translate("MainWindow", u"exit", None))
+        pass
     # retranslateUi
 

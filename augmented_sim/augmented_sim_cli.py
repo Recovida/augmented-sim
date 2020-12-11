@@ -18,7 +18,7 @@ from augmented_sim.core import AugmentedSIM
 def main() -> None:
     desc = '''
     This program reads a DBF or CSV file containing death causes encoded
-    according to "Sistema de Informação sobre Mortalidade" (SIM).
+    according to "Sistema de Informa\xe7\xe3o sobre Mortalidade" (SIM).
     It adds a few columns and saves the file as CSV.
     '''
 

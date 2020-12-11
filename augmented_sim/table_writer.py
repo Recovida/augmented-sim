@@ -4,12 +4,14 @@ from typing import Optional, Callable, Any, List, Dict, Union
 import csv
 import os
 
+from augmented_sim.i18n import get_translator, get_tr
+
 
 class TableWritingError(Exception):
 
     def __init__(self, message: str, file_name: str,
                  orig_exception: Optional[BaseException] = None):
-        super().__init__(message or f'Não foi possível salvar “{file_name}”.')
+        super().__init__(message)
         self.message = message
         self.file_name = file_name
         self.orig_exception = orig_exception
@@ -65,11 +67,13 @@ class TableWriter:
 
     @handle_table_writing_exceptions
     def __init__(self, format: str, columns: List[str], file_name: str):
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
         self.file_name = file_name
         self.format = format.upper()
         if format not in ['CSV']:
-            raise TableWritingError(f'Formato “{format}” não suportado.',
-                                    file_name)
+            msg = self.tr('unsupported-file').format(file_name)
+            raise TableWritingError(msg, file_name)
         if format == 'CSV':
             self.fd = open(self.file_name, 'w', newline='',)
             self.writer = csv.DictWriter(

@@ -14,6 +14,7 @@ from tqdm import tqdm
 from time import time
 from typing import List, Callable, Union
 
+from augmented_sim.i18n import get_translator, get_tr
 from augmented_sim.table_reader import TableReader
 from augmented_sim.table_writer import TableWriter
 from augmented_sim.sim.row_parser import SIMRowParser
@@ -90,6 +91,8 @@ class AugmentedSIM:
     def __init__(self, input_file_names: str, output_file_name: str):
         self.input_file_names = input_file_names
         self.output_file_name = output_file_name
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
 
     def augment(self,
                 report_progress: Callable[[List], None] = None,
@@ -123,7 +126,7 @@ class AugmentedSIM:
             report_exception(exc)
 
         def _format_elapsed_time(dt: relativedelta) -> str:
-            # Report elapsed time (in Portuguese)
+            # Report elapsed time (using symbols - language independent)
             t_str = []
             expr = [
                 ('days', 'd'), ('hours', 'h'),
@@ -136,7 +139,7 @@ class AugmentedSIM:
                 else:
                     value = int(value)
                 if value > 0:
-                    t_str.append(str(value).replace('.', ',') + symbol)
+                    t_str.append(str(value) + symbol)
             if len(t_str) == 0:
                 t_str = ['0s']
             return ''.join(t_str)
@@ -152,7 +155,7 @@ class AugmentedSIM:
             # Using an integer to get integer attributes later
             dt = relativedelta(seconds=elapsed)
             s = _format_elapsed_time(dt)
-            print(f'Arquivo salvo (tempo decorrido: {s}).')
+            print(self.tr('file-saved').format(s))
 
         # Open input file
         try:

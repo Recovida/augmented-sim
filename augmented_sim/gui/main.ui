@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>890</width>
-    <height>358</height>
+    <height>367</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>{Nome do Programa}</string>
+   <string notr="true">{Nome do Programa}</string>
   </property>
   <property name="locale">
    <locale language="Portuguese" country="Brazil"/>
@@ -33,7 +33,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Gerar arquivo de saída com as novas colunas</string>
+       <string>generate</string>
       </property>
      </widget>
     </item>
@@ -100,7 +100,7 @@
        </size>
       </property>
       <property name="text">
-       <string>Incluir...</string>
+       <string>add</string>
       </property>
       <property name="icon">
        <iconset theme="list-add">
@@ -114,7 +114,7 @@
     <item row="4" column="0">
      <widget class="QLabel" name="label_overall_progress">
       <property name="text">
-       <string>Progresso geral</string>
+       <string>overall-progress</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -124,7 +124,7 @@
     <item row="6" column="0">
      <widget class="QLabel" name="label_current_progress">
       <property name="text">
-       <string>Progresso no arquivo</string>
+       <string>current-progress</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -144,7 +144,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="label_file1">
       <property name="text">
-       <string>Arquivos de entrada (DBF/CSV)</string>
+       <string extracomment="input-files" id="input-files">input-files</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -154,7 +154,7 @@
     <item row="1" column="0">
      <widget class="QLabel" name="label_outfile1">
       <property name="text">
-       <string>Arquivo de saída (CSV)</string>
+       <string>output-file</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -176,7 +176,7 @@
        </size>
       </property>
       <property name="text">
-       <string>Escolher...</string>
+       <string>choose</string>
       </property>
       <property name="icon">
        <iconset theme="document-export">
@@ -203,7 +203,7 @@
        <item>
         <widget class="QPushButton" name="btn_about">
          <property name="text">
-          <string>Sobre</string>
+          <string>about</string>
          </property>
          <property name="icon">
           <iconset theme="help-about">
@@ -227,7 +227,7 @@
        <item>
         <widget class="QPushButton" name="btn_close">
          <property name="text">
-          <string>Fechar</string>
+          <string>exit</string>
          </property>
          <property name="icon">
           <iconset theme="exit">
