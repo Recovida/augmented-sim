@@ -25,7 +25,8 @@ if vars(sys.modules[__name__])['__package__'] is None and \
 from augmented_sim.core import AugmentedSIM
 from augmented_sim.gui.main import Ui_MainWindow
 from augmented_sim.gui.about import Ui_AboutDialog
-from augmented_sim.i18n import get_translator, get_tr
+from augmented_sim.i18n import get_translator, get_tr, \
+    AVAILABLE_LANGUAGES, CHOSEN_LANGUAGE, change_language_globally
 from augmented_sim import PROGRAM_METADATA
 
 
@@ -76,6 +77,13 @@ class AugmentedSIMGUI(QObject):
         self.error_signal.connect(self._error_msg)
         self.df = DeleteFilter()
         self.ui.list_infile1.installEventFilter(self.df)
+        for code, name, *_ in AVAILABLE_LANGUAGES:
+            self.ui.cbox_language.addItem(name, code)
+        self.ui.cbox_language.setCurrentIndex(
+            self.ui.cbox_language.findData(CHOSEN_LANGUAGE))
+        self.ui.cbox_language.currentIndexChanged.connect(
+            lambda idx:
+            self.change_language(self.ui.cbox_language.itemData(idx)))
         self.widgets_to_disable = [
             self.ui.btn_execute, self.ui.btn_file1, self.ui.btn_outfile1,
             self.ui.list_infile1, self.ui.edit_outfile1, self.ui.btn_close
@@ -132,6 +140,13 @@ class AugmentedSIMGUI(QObject):
         ui.buttonBox.button(QDialogButtonBox.Close).setText(
             self.tr('close'))
         w.exec_()
+
+    def change_language(self, language: str) -> None:
+        change_language_globally(language)
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
+        self.app.installTranslator(self.trans)
+        self.ui.retranslateUi(self.window)
 
     def choose_file1(self) -> None:
         options = QFileDialog.Options()

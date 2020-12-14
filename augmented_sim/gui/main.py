@@ -159,6 +159,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.btn_about)
 
+        self.cbox_language = QComboBox(self.widget)
+        self.cbox_language.setObjectName(u"cbox_language")
+
+        self.horizontalLayout.addWidget(self.cbox_language)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)

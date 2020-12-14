@@ -16,8 +16,6 @@ class TableWritingError(Exception):
         self.file_name = file_name
         self.orig_exception = orig_exception
         self.details = ''
-        self.trans = get_translator(None)
-        self.tr = get_tr('TableWritingError', self.trans)
         if orig_exception:
             import traceback
             tb = traceback.TracebackException.from_exception(orig_exception)
@@ -26,6 +24,8 @@ class TableWritingError(Exception):
     def handle_exceptions(self, function: Callable) -> Callable:
 
         def f(*args, **kwargs) -> Any:
+            self.trans = get_translator(None)
+            self.tr = get_tr('TableWritingError', self.trans)
             if hasattr(args[0], 'file_name'):
                 self.file_name = args[0].file_name
             else:  # constructor of TableWriter
