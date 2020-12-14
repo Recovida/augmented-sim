@@ -19,6 +19,7 @@ class Ui_AboutDialog(object):
             AboutDialog.setObjectName(u"AboutDialog")
         AboutDialog.setWindowModality(Qt.WindowModal)
         AboutDialog.resize(556, 498)
+        AboutDialog.setWindowTitle(u"{Sobre Nome do programa}")
         AboutDialog.setLocale(QLocale(QLocale.Portuguese, QLocale.Brazil))
         AboutDialog.setModal(True)
         self.verticalLayout = QVBoxLayout(AboutDialog)
@@ -45,12 +46,14 @@ class Ui_AboutDialog(object):
         font.setBold(True)
         font.setWeight(75)
         self.label_name.setFont(font)
+        self.label_name.setText(u"{Program name}")
         self.label_name.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_2.addWidget(self.label_name)
 
         self.label_version = QLabel(self.widget_4)
         self.label_version.setObjectName(u"label_version")
+        self.label_version.setText(u"{Program version}")
         self.label_version.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_2.addWidget(self.label_version)
@@ -162,6 +165,11 @@ class Ui_AboutDialog(object):
         self.textBrowser = QTextBrowser(self.scrollAreaWidgetContents_2)
         self.textBrowser.setObjectName(u"textBrowser")
         self.textBrowser.setFrameShape(QFrame.NoFrame)
+        self.textBrowser.setHtml(u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">{Licence text}</p></body></html>")
         self.textBrowser.setOpenExternalLinks(True)
 
         self.verticalLayout_7.addWidget(self.textBrowser)
@@ -171,6 +179,7 @@ class Ui_AboutDialog(object):
         self.verticalLayout_8.addWidget(self.scrollArea_2)
 
         self.tabs_external_licences.addTab(self.tab_4, "")
+        self.tabs_external_licences.setTabText(self.tabs_external_licences.indexOf(self.tab_4), u"{Library name}")
 
         self.verticalLayout_4.addWidget(self.tabs_external_licences)
 
@@ -190,7 +199,7 @@ class Ui_AboutDialog(object):
         self.retranslateUi(AboutDialog)
         self.buttonBox.rejected.connect(AboutDialog.close)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
         self.tabs_external_licences.setCurrentIndex(0)
 
 
@@ -198,18 +207,10 @@ class Ui_AboutDialog(object):
     # setupUi
 
     def retranslateUi(self, AboutDialog):
-        AboutDialog.setWindowTitle(QCoreApplication.translate("AboutDialog", u"Sobre {Nome do programa}", None))
-        self.label_name.setText(QCoreApplication.translate("AboutDialog", u"{Nome do programa}", None))
-        self.label_version.setText(QCoreApplication.translate("AboutDialog", u"{Vers\u00e3o do programa}", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("AboutDialog", u"Programa", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("AboutDialog", u"Licen\u00e7a", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("AboutDialog", u"Desenvolvimento", None))
-        self.textBrowser.setHtml(QCoreApplication.translate("AboutDialog", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">{Texto da licen\u00e7a}</p></body></html>", None))
-        self.tabs_external_licences.setTabText(self.tabs_external_licences.indexOf(self.tab_4), QCoreApplication.translate("AboutDialog", u"{nome do programa/biblioteca}", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("AboutDialog", u"Licen\u00e7as de frameworks e bibliotecas", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("AboutDialog", u"program", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("AboutDialog", u"licence", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("AboutDialog", u"development", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("AboutDialog", u"library-licences", None))
+        pass
     # retranslateUi
 

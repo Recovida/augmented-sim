@@ -3,6 +3,7 @@
 
 import argparse
 import os.path
+import pathlib
 import sys
 
 from typing import Type, Optional, List, Tuple
@@ -17,14 +18,15 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, \
 if vars(sys.modules[__name__])['__package__'] is None and \
         __name__ == '__main__':
     # allow running from any folder
-    import pathlib
     here = pathlib.Path(__file__).parent.parent.resolve()
     sys.path.insert(1, str(here))
 
 
+from augmented_sim.core import AugmentedSIM
 from augmented_sim.gui.main import Ui_MainWindow
 from augmented_sim.gui.about import Ui_AboutDialog
-from augmented_sim.core import AugmentedSIM
+from augmented_sim.i18n import get_translator, get_tr, \
+    AVAILABLE_LANGUAGES, CHOSEN_LANGUAGE, change_language_globally
 from augmented_sim import PROGRAM_METADATA
 
 
@@ -53,7 +55,13 @@ class AugmentedSIMGUI(QObject):
                  output_file: Optional[str] = None):
         super().__init__()
         self.augment_cls = augment_cls
+
         self.app = QApplication(sys.argv)
+
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
+        self.app.installTranslator(self.trans)
+
         self.window = QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
@@ -69,9 +77,16 @@ class AugmentedSIMGUI(QObject):
         self.error_signal.connect(self._error_msg)
         self.df = DeleteFilter()
         self.ui.list_infile1.installEventFilter(self.df)
+        for code, name, *_ in AVAILABLE_LANGUAGES:
+            self.ui.cbox_language.addItem(name, code)
+        self.ui.cbox_language.setCurrentIndex(
+            self.ui.cbox_language.findData(CHOSEN_LANGUAGE))
+        self.ui.cbox_language.currentIndexChanged.connect(
+            lambda idx:
+            self.change_language(self.ui.cbox_language.itemData(idx)))
         self.widgets_to_disable = [
             self.ui.btn_execute, self.ui.btn_file1, self.ui.btn_outfile1,
-            self.ui.list_infile1, self.ui.edit_outfile1
+            self.ui.list_infile1, self.ui.edit_outfile1, self.ui.btn_close
         ]
         if input_files:
             self.fill_file1(input_files)
@@ -89,7 +104,7 @@ class AugmentedSIMGUI(QObject):
         year = PROGRAM_METADATA.get('YEAR', '')
         ui = Ui_AboutDialog()
         ui.setupUi(w)
-        w.setWindowTitle('Sobre ' + name)
+        w.setWindowTitle(self.tr('about-program').format(name))
         ui.label_name.setText(name)
         ui.label_version.setText(f'{version} ({year})')
         ui.text_browser_licence.setMarkdown(
@@ -122,14 +137,22 @@ class AugmentedSIMGUI(QObject):
             vl2.setContentsMargins(0, 0, 0, 0)
             ui.tabs_external_licences.addTab(tab, name)
             ui.tabs.append((tab, vl1, sa, sac, vl1, vl2, text_browser))
-        ui.buttonBox.button(QDialogButtonBox.Close).setText('Fechar')
+        ui.buttonBox.button(QDialogButtonBox.Close).setText(
+            self.tr('close'))
         w.exec_()
+
+    def change_language(self, language: str) -> None:
+        change_language_globally(language)
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
+        self.app.installTranslator(self.trans)
+        self.ui.retranslateUi(self.window)
 
     def choose_file1(self) -> None:
         options = QFileDialog.Options()
         names, _ = QFileDialog.getOpenFileNames(
-            self.window, 'Arquivo de entrada 1', '',
-            'DBase File or Comma-Separated Values (*.dbf *.csv)',
+            self.window, self.tr('input-files'), '',
+            'DBase File / Comma-Separated Values (*.dbf *.csv)',
             options=options
         )
         self.fill_file1(names)
@@ -146,7 +169,7 @@ class AugmentedSIMGUI(QObject):
     def choose_outfile1(self) -> None:
         options = QFileDialog.Options()
         f, _ = QFileDialog.getSaveFileName(
-            self.window, 'Arquivo de saída', '',
+            self.window, self.tr('output-file'), '',
             'Comma-Separated Values (*.csv)',
             options=options
         )
@@ -179,20 +202,18 @@ class AugmentedSIMGUI(QObject):
         self.current_file_signal.emit('')
         if not (input_files and output_file):
             self.ui.label_msg.setText('')
-            self._error_msg('Erro',
-                            'Escolha os arquivos de entrada '
-                            'e o arquivo de saída.')
+            self._error_msg(self.tr('error'),
+                            self.tr('missing-files'))
             return
         if output_file in input_files:
             self.ui.label_msg.setText('')
-            self._error_msg('Erro',
-                            'O arquivo de saída não pode ser um dos '
-                            'arquivos de entrada.')
+            self._error_msg(self.tr('error'),
+                            self.tr('output-cannot-be-input'))
             return
         self.show_progress()
         aug = self.augment_cls(input_files, output_file)
         self.disable_widgets()
-        self.ui.label_msg.setText('Executando operação…')
+        self.ui.label_msg.setText(self.tr('executing'))
         self.ui.label_msg.repaint()
         aug.augment(
             report_progress=self.update_progress,
@@ -206,7 +227,7 @@ class AugmentedSIMGUI(QObject):
         self.current_file_signal.emit('')
         self.current_progress_signal.emit(0)
         self.overall_progress_signal.emit(0)
-        self.error_signal.emit('Erro', msg, details)
+        self.error_signal.emit(self.tr('error'), msg, details)
         self.enable_widgets()
         self.hide_progress()
 
@@ -223,7 +244,7 @@ class AugmentedSIMGUI(QObject):
         self.overall_progress_signal.emit(int((100 * p[2]) / p[3]))
         self.current_file_signal.emit(p[-1] or '')
         if p[2] == p[3]:
-            self.ui.label_msg.setText('O arquivo foi salvo.')
+            self.ui.label_msg.setText(self.tr('file-saved'))
             self.enable_widgets()
             self.current_file_signal.emit('')
 

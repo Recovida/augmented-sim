@@ -13,7 +13,7 @@ windows = platform.system() == 'Windows'
 def show_msg(*args, **kwargs) -> None:
     print(*args, **kwargs)
     if windows:
-        print('Pressione Enter para fechar.')
+        print('Pressione Enter para fechar.\n(Press Enter to close.)')
         input()
 
 
@@ -24,7 +24,10 @@ process = subprocess.Popen(
 process.wait()
 if process.returncode == 0:
     os.system('cls' if windows else 'clear')
-    show_msg('As dependências do programa estão prontas.')
+    show_msg('As dependências do programa estão prontas. \n'
+             '(The dependencies are ready.)')
 else:
-    show_msg('Houve um erro ao instalar as dependências.')
+    show_msg('Houve um erro ao instalar as dependências.\n'
+             '(An error occurred during the '
+             'installation of the dependencies.)')
     exit(1)

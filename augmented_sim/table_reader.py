@@ -6,12 +6,14 @@ import dbfread
 
 from typing import Union, Optional, Iterator, Tuple, Dict
 
+from augmented_sim.i18n import get_translator, get_tr
+
 
 class TableReadingError(ValueError):
 
     def __init__(self, message: str, file_name: str,
                  orig_exception: Optional[BaseException] = None):
-        super().__init__(message or f'Não foi possível ler “{file_name}”.')
+        super().__init__(message)
         self.message = message
         self.file_name = file_name
         self.orig_exception = orig_exception
@@ -28,6 +30,8 @@ class TableReader:
     UNION_ALL_PARSERS = Union[csv.DictReader, dbfread.DBF]
 
     def __init__(self, file_names: str):
+        self.trans = get_translator(None)
+        self.tr = get_tr(type(self).__name__, self.trans)
         self.files = []
         self.columns = []
         self.read_count = {}
@@ -54,10 +58,10 @@ class TableReader:
                     columns = parser.field_names[:]
                     denominator = parser.header.numrecords
                 else:
-                    msg = f'O arquivo “{file_name}” não é suportado.'
+                    msg = self.tr('unsupported-file').format(file_name)
                     raise TableReadingError(msg, file_name)
             except Exception as e:
-                msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
+                msg = self.tr('unsupported-invalid-file').format(file_name)
                 raise TableReadingError(msg, file_name, e)
             get_pos = (lambda fn: lambda: self.read_count[fn])(file_name)
             denominator = max(denominator, 1)
@@ -79,7 +83,7 @@ class TableReader:
                     f[-2] = min(den, get_pos())
                     yield row
             except Exception as e:
-                msg = f'Houve um erro ao ler o arquivo “{file_name}”.'
+                msg = self.tr('error-reading-file').format(file_name)
                 raise TableReadingError(msg, file_name, e)
             f[-1] = get_pos()  # 100% even if denominator fails
         self.currently_reading = ''
@@ -126,5 +130,5 @@ class TableReader:
                 pass
             else:
                 return n, enc
-        msg = f'O arquivo “{file_name}” é inválido ou não suportado.'
+        msg = self.tr('unsupported-invalid-file').format(file_name)
         raise TableReadingError(msg, file_name)
