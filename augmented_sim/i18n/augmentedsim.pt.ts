@@ -150,4 +150,45 @@
         <translation>Ocorreu um erro ao ler o seguinte arquivo: “{0}”.</translation>
     </message>
 </context>
+<context>
+    <name>TableWriter</name>
+    <message>
+        <location filename="../table_writer.py" line="75"/>
+        <source>unsupported-file</source>
+        <translation>O formato do seguinte arquivo não é suportado: “{0}”.</translation>
+    </message>
+</context>
+<context>
+    <name>TableWritingError</name>
+    <message>
+        <location filename="../table_writer.py" line="36"/>
+        <source>invalid-path</source>
+        <translation>Caminho inexistente ou inválido: “{0}”.</translation>
+    </message>
+    <message>
+        <location filename="../table_writer.py" line="43"/>
+        <source>forbidden</source>
+        <translation>Não é possível salvar arquivos no local especificado. Verifique as permissões.</translation>
+    </message>
+    <message>
+        <location filename="../table_writer.py" line="39"/>
+        <source>output-file-is-directory</source>
+        <translation>O arquivo de saída não pode ser um diretório/pasta.</translation>
+    </message>
+    <message>
+        <location filename="../table_writer.py" line="49"/>
+        <source>insufficient-space</source>
+        <translation>Espaço insuficiente para salvar o arquivo.</translation>
+    </message>
+    <message>
+        <location filename="../table_writer.py" line="51"/>
+        <source>read-only</source>
+        <translation>Não é possível salvar arquivos no local especificado.</translation>
+    </message>
+    <message>
+        <location filename="../table_writer.py" line="52"/>
+        <source>long-file-name</source>
+        <translation>O nome do arquivo é longo demais: “{0}”.</translation>
+    </message>
+</context>
 </TS>

@@ -4,7 +4,7 @@ from typing import Optional, Callable
 from PySide2.QtCore import QObject, QTranslator, QLocale
 
 
-def get_translator(obj: Optional[QObject], locale: str = 'en') -> QTranslator:
+def get_translator(obj: Optional[QObject], locale: str = 'pt') -> QTranslator:
     here = Path(__file__).parent.parent.resolve()
     translator = QTranslator(obj)
     fn, d = 'augmentedsim', str(here / 'i18n')

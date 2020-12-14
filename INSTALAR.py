@@ -13,7 +13,7 @@ windows = platform.system() == 'Windows'
 def show_msg(*args, **kwargs) -> None:
     print(*args, **kwargs)
     if windows:
-        print('Pressione Enter para fechar.')
+        print('Pressione Enter para fechar.\n(Press Enter to close.)')
         input()
 
 
@@ -23,7 +23,8 @@ process = subprocess.Popen(
      '-r', str(here / 'requirements.txt')])
 process.wait()
 if process.returncode != 0:
-    show_msg('Houve um erro na instalação.')
+    show_msg('Houve um erro na instalação.\n'
+             '(An error occurred during the installation.)')
     exit(1)
 
 # Run setup.py
@@ -31,7 +32,8 @@ process = subprocess.Popen([sys.executable, 'setup.py', 'install', '--user'])
 process.wait()
 if process.returncode == 0:
     os.system('cls' if windows else 'clear')
-    show_msg('O programa foi instalado.')
+    show_msg('O programa foi instalado.\n(The program has been installed.)')
 else:
-    show_msg('Houve um erro na instalação.')
+    show_msg('Houve um erro na instalação\n'
+             '(An error occurred during the installation.)')
     exit(1)

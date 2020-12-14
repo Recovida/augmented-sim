@@ -16,51 +16,49 @@ class TableWritingError(Exception):
         self.file_name = file_name
         self.orig_exception = orig_exception
         self.details = ''
+        self.trans = get_translator(None)
+        self.tr = get_tr('TableWritingError', self.trans)
         if orig_exception:
             import traceback
             tb = traceback.TracebackException.from_exception(orig_exception)
             self.details = ''.join(tb.format())
 
+    def handle_exceptions(self, function: Callable) -> Callable:
 
-def handle_table_writing_exceptions(function: Callable) -> Callable:
-    def f(*args, **kwargs) -> Any:
-        if hasattr(args[0], 'file_name'):
-            file_name = args[0].file_name
-        else:  # constructor of TableWriter
-            file_name = args[3]
-        try:
-            function(*args, **kwargs)
-        except FileNotFoundError as e:
-            raise TableWritingError(
-                'Arquivo ou caminho inexistente ou '
-                f'inválido:\n“{e.filename}”.',
-                e.filename, e
-            )
-        except IsADirectoryError as e:
-            raise TableWritingError(
-                'O arquivo de saída não pode ser um diretório/pasta.',
-                e.filename, e
-            )
-        except PermissionError as e:
-            raise TableWritingError(
-                'Não é possível salvar o arquivo no local especificado.'
-                '\nVerifique as permissões.',
-                e.filename, e
-            )
-        except OSError as e:
-            import errno
-            error = errno.errorcode.get(e.errno, '')
-            msg = os.strerror(e.errno)
-            if error == 'ENOSPC':
-                msg = 'Espaço insuficiente para salvar o arquivo.'
-            elif error == 'EROFS':
-                msg = 'Não é possível salvar arquivos no local especificado.'
-            elif error.endswith('NAMETOOLONG'):
-                msg = f'O nome do arquivo é grande demais:\n“{e.filename}”.'
-            raise TableWritingError(msg, file_name, e)
-        except BaseException as e:
-            raise TableWritingError(str(e), file_name, e)
-    return f
+        def f(*args, **kwargs) -> Any:
+            if hasattr(args[0], 'file_name'):
+                self.file_name = args[0].file_name
+            else:  # constructor of TableWriter
+                self.file_name = args[3]
+            try:
+                function(*args, **kwargs)
+            except FileNotFoundError as e:
+                msg = self.tr('invalid-path').format(e.filename)
+                raise TableWritingError(msg, e.filename, e)
+            except IsADirectoryError as e:
+                msg = self.tr('output-file-is-directory').format(e.filename)
+                raise TableWritingError(msg, e.filename, e)
+            except PermissionError as e:
+                msg = self.tr('forbidden')
+                raise TableWritingError(msg, e.filename, e)
+            except OSError as e:
+                import errno
+                error = errno.errorcode.get(e.errno, '')
+                if error == 'ENOSPC':
+                    msg = self.tr('insufficient-space')
+                elif error == 'EROFS':
+                    msg = self.tr('read-only')
+                elif error.endswith('NAMETOOLONG'):
+                    msg = self.tr('long-file-name').format(e.filename)
+                else:
+                    msg = os.strerror(e.errno)
+                raise TableWritingError(msg, self.file_name, e)
+            except BaseException as e:
+                raise TableWritingError(str(e), self.file_name, e)
+        return f
+
+
+handle_table_writing_exceptions = TableWritingError('', '').handle_exceptions
 
 
 class TableWriter:
@@ -71,6 +69,8 @@ class TableWriter:
         self.tr = get_tr(type(self).__name__, self.trans)
         self.file_name = file_name
         self.format = format.upper()
+        self.fd = None
+        self.writer = None
         if format not in ['CSV']:
             msg = self.tr('unsupported-file').format(file_name)
             raise TableWritingError(msg, file_name)

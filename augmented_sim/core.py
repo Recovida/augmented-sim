@@ -3,7 +3,7 @@
 
 import sys
 if sys.version_info < (3, 6):
-    print('Este programa requer Python 3.6 ou superior.', file=sys.stderr)
+    sys.stderr.write('Python < 3.6: NOT SUPPORTED / NÃO SUPORTADO\n')
     exit(1)
 
 import threading
