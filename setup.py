@@ -48,7 +48,8 @@ s = setup(
     python_requires='>=3.6, <4',
     install_requires=DEPENDENCIES,
     package_data={'augmented_sim':
-                    ['../README.md', '../LICENCE.txt', '.licences/*']},
+                    ['../README.md', '../LICENCE.txt', '.licences/*',
+                     'i18n/*.qm']},
     include_package_data=True,
 
     entry_points={
