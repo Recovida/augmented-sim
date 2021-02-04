@@ -29,6 +29,8 @@ from augmented_sim.i18n import get_translator, get_tr, \
     AVAILABLE_LANGUAGES, CHOSEN_LANGUAGE, change_language_globally
 from augmented_sim import PROGRAM_METADATA
 
+from augmented_sim.sim.input_pattern import ALL_PATTERNS
+
 
 class DeleteFilter(QObject):
 
@@ -52,7 +54,8 @@ class AugmentedSIMGUI(QObject):
 
     def __init__(self, augment_cls: Type,
                  input_files: Optional[List[str]] = None,
-                 output_file: Optional[str] = None):
+                 output_file: Optional[str] = None,
+                 pattern_name: Optional[str] = ''):
         super().__init__()
         self.augment_cls = augment_cls
 
@@ -79,14 +82,20 @@ class AugmentedSIMGUI(QObject):
         self.ui.list_infile1.installEventFilter(self.df)
         for code, name, *_ in AVAILABLE_LANGUAGES:
             self.ui.cbox_language.addItem(name, code)
+        self.ui.cbox_input_pattern.addItem('', '')
         self.ui.cbox_language.setCurrentIndex(
             self.ui.cbox_language.findData(CHOSEN_LANGUAGE))
+        for p in ALL_PATTERNS:
+            self.ui.cbox_input_pattern.addItem(p, p)
+        self.ui.cbox_input_pattern.setCurrentIndex(
+            self.ui.cbox_input_pattern.findData(pattern_name))
         self.ui.cbox_language.currentIndexChanged.connect(
             lambda idx:
             self.change_language(self.ui.cbox_language.itemData(idx)))
         self.widgets_to_disable = [
             self.ui.btn_execute, self.ui.btn_file1, self.ui.btn_outfile1,
-            self.ui.list_infile1, self.ui.edit_outfile1, self.ui.btn_close
+            self.ui.list_infile1, self.ui.edit_outfile1, self.ui.btn_close,
+            self.ui.cbox_input_pattern
         ]
         if input_files:
             self.fill_file1(input_files)
@@ -197,6 +206,7 @@ class AugmentedSIMGUI(QObject):
         w = self.ui.list_infile1
         input_files = [w.item(i).text() for i in range(w.count())]
         output_file = self.ui.edit_outfile1.text()
+        pattern_name = self.ui.cbox_input_pattern.currentData()
         self.current_progress_signal.emit(0)
         self.overall_progress_signal.emit(0)
         self.current_file_signal.emit('')
@@ -210,8 +220,13 @@ class AugmentedSIMGUI(QObject):
             self._error_msg(self.tr('error'),
                             self.tr('output-cannot-be-input'))
             return
+        if not pattern_name:
+            self.ui.label_msg.setText('')
+            self._error_msg(self.tr('error'),
+                            self.tr('blank-pattern'))
+            return
         self.show_progress()
-        aug = self.augment_cls(input_files, output_file)
+        aug = self.augment_cls(input_files, output_file, pattern_name)
         self.disable_widgets()
         self.ui.label_msg.setText(self.tr('executing'))
         self.ui.label_msg.repaint()
@@ -266,11 +281,13 @@ def main() -> None:
                             help='output file name (CSV)')
     arg_parser.add_argument('input_files', nargs='*',
                             help='input file names (DBF or CSV)')
+    arg_parser.add_argument('--pattern', '-p', type=str, default='')
     a = arg_parser.parse_args()
     AugmentedSIMGUI(
         augment_cls=AugmentedSIM,
         input_files=a.input_files,
         output_file=a.output_file,
+        pattern_name=a.pattern,
     )
 
 

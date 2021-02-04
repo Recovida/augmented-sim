@@ -46,7 +46,8 @@ class TableReader:
                     n, enc = self._count_lines_and_guess_encoding(file_name)
                     denominator = n - 1  # excluding header
                     fd = open(file_name, 'r', encoding=enc)
-                    dialect = csv.Sniffer().sniff(fd.read(1024))
+                    dialect = csv.Sniffer().sniff(
+                        fd.read(1024).split('\n', 1)[0])
                     fd.seek(0)
                     fd.seek(0)
                     parser = csv.DictReader(fd, dialect=dialect)

@@ -12,12 +12,14 @@ from dateutil.relativedelta import relativedelta
 from pathlib import Path
 from tqdm import tqdm
 from time import time
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Type
 
 from augmented_sim.i18n import get_translator, get_tr
 from augmented_sim.table_reader import TableReader
 from augmented_sim.table_writer import TableWriter
 from augmented_sim.sim.row_parser import SIMRowParser
+
+from augmented_sim.sim.input_pattern import ALL_PATTERNS
 
 from augmented_sim.sim.age_augmenter import AgeAugmenter
 from augmented_sim.sim.death_cause_augmenter import DeathCauseAugmenter
@@ -48,6 +50,7 @@ class AugmentThread(threading.Thread):
                  output_file_name: str,
                  parser: TableReader.UNION_ALL_PARSERS,
                  cols: List[str],
+                 pattern: Type,
                  report_progress: Callable[[List], None] = None,
                  report_exception: Callable[[BaseException], None] = None,
                  report_conclusion: Callable[[], None] = None
@@ -56,6 +59,7 @@ class AugmentThread(threading.Thread):
         self.output_file_name = output_file_name
         self.parser = parser
         self.cols = cols
+        self.pattern = pattern
         self.report_progress = report_progress
         self.report_exception = report_exception
         self.report_conclusion = report_conclusion
@@ -71,6 +75,7 @@ class AugmentThread(threading.Thread):
             with TableWriter('CSV', self.cols, self.output_file_name) as w:
                 w.write_header()
                 for row in self.parser.parse():
+                    row = self.pattern.adapt_row(row)
                     parsed_row = SIMRowParser.parse_row(row)
                     for augmenter in ALL_AUGMENTERS:
                         row.update(augmenter.get_new_values(parsed_row))
@@ -88,9 +93,11 @@ class AugmentThread(threading.Thread):
 
 class AugmentedSIM:
 
-    def __init__(self, input_file_names: str, output_file_name: str):
+    def __init__(self, input_file_names: str, output_file_name: str,
+                 pattern_name: str):
         self.input_file_names = input_file_names
         self.output_file_name = output_file_name
+        self.pattern = ALL_PATTERNS[pattern_name]
         self.trans = get_translator(None)
         self.tr = get_tr(type(self).__name__, self.trans)
 
@@ -165,6 +172,7 @@ class AugmentedSIM:
             return
 
         cols = parser.columns[:]
+        cols = self.pattern.adapt_col_list(cols)
         progress = parser.progress()
 
         # Add new columns depending on the existing ones
@@ -181,7 +189,7 @@ class AugmentedSIM:
 
         # Open output file
         thread = AugmentThread(
-            self.output_file_name, parser, cols,
+            self.output_file_name, parser, cols, self.pattern,
             _report_progress, _report_exception, _report_conclusion
         )
         thread.start()

@@ -13,6 +13,7 @@ if vars(sys.modules[__name__])['__package__'] is None and \
 
 
 from augmented_sim.core import AugmentedSIM
+from augmented_sim.sim.input_pattern import ALL_PATTERNS
 
 
 def main() -> None:
@@ -29,6 +30,8 @@ def main() -> None:
     arg_parser.add_argument('input_files', nargs='+',
                             type=str,
                             help='input file names (DBF or CSV)')
+    arg_parser.add_argument('--pattern', '-p', type=str, required=True,
+                            choices=list(ALL_PATTERNS.keys()))
     a = arg_parser.parse_args()
 
     def on_exc(e: BaseException) -> None:
@@ -36,7 +39,7 @@ def main() -> None:
         details = getattr(e, 'details', '')
         print('=====', msg, '\n', details, '\n\n')
 
-    aug = AugmentedSIM(a.input_files, a.output_file)
+    aug = AugmentedSIM(a.input_files, a.output_file, a.pattern)
     aug.augment(report_exception=on_exc)
 
 

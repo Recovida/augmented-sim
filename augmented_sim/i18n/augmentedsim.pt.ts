@@ -26,7 +26,7 @@
 <context>
     <name>AugmentedSIM</name>
     <message>
-        <location filename="../core.py" line="158"/>
+        <location filename="../core.py" line="162"/>
         <source>file-saved</source>
         <translation>O arquivo foi salvo (tempo decorrido: {0}).</translation>
     </message>
@@ -34,90 +34,95 @@
 <context>
     <name>AugmentedSIMGUI</name>
     <message>
-        <location filename="../augmented_sim_gui.py" line="99"/>
+        <location filename="../augmented_sim_gui.py" line="112"/>
         <source>about-program</source>
         <translation>Sobre {0}</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="133"/>
+        <location filename="../augmented_sim_gui.py" line="146"/>
         <source>close</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="139"/>
+        <location filename="../augmented_sim_gui.py" line="159"/>
         <source>input-files</source>
         <translation>Arquivos de entrada</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="157"/>
+        <location filename="../augmented_sim_gui.py" line="177"/>
         <source>output-file</source>
         <translation>Arquivo de saída</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="215"/>
+        <location filename="../augmented_sim_gui.py" line="241"/>
         <source>error</source>
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="191"/>
+        <location filename="../augmented_sim_gui.py" line="212"/>
         <source>missing-files</source>
         <translation>&apos;Escolha os arquivos de entrada e o arquivo de saída.&apos;</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="196"/>
+        <location filename="../augmented_sim_gui.py" line="217"/>
         <source>output-cannot-be-input</source>
         <translation>O arquivo de saída não pode ser um dos arquivos de entrada.</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="201"/>
+        <location filename="../augmented_sim_gui.py" line="227"/>
         <source>executing</source>
         <translation>Executando operação...</translation>
     </message>
     <message>
-        <location filename="../augmented_sim_gui.py" line="232"/>
+        <location filename="../augmented_sim_gui.py" line="258"/>
         <source>file-saved</source>
         <translation>O arquivo foi salvo.</translation>
+    </message>
+    <message>
+        <location filename="../augmented_sim_gui.py" line="222"/>
+        <source>blank-pattern</source>
+        <translation>O padrão de entrada não pode estar em branco.</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../gui/main.ui" line="36"/>
+        <location filename="../gui/main.ui" line="253"/>
         <source>generate</source>
         <translation>Gerar arquivo de saída</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="103"/>
+        <location filename="../gui/main.ui" line="115"/>
         <source>add</source>
         <translation>Incluir...</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="117"/>
+        <location filename="../gui/main.ui" line="237"/>
         <source>overall-progress</source>
         <translation>Progresso geral</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="127"/>
+        <location filename="../gui/main.ui" line="204"/>
         <source>current-progress</source>
         <translation>Progresso no arquivo</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="147"/>
+        <location filename="../gui/main.ui" line="93"/>
         <source>input-files</source>
         <translation>Arquivos de entrada</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="157"/>
+        <location filename="../gui/main.ui" line="33"/>
         <source>output-file</source>
         <translation>Arquivo de saída</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="179"/>
+        <location filename="../gui/main.ui" line="226"/>
         <source>choose</source>
         <translation>Escolher...</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="206"/>
+        <location filename="../gui/main.ui" line="52"/>
         <source>about</source>
         <translation>Sobre</translation>
     </message>
@@ -127,9 +132,14 @@
         <translation type="obsolete">Sair</translation>
     </message>
     <message>
-        <location filename="../gui/main.ui" line="230"/>
+        <location filename="../gui/main.ui" line="79"/>
         <source>exit</source>
         <translation>Sair</translation>
+    </message>
+    <message>
+        <location filename="../gui/main.ui" line="136"/>
+        <source>input-pattern</source>
+        <translation>Padrão de entrada</translation>
     </message>
 </context>
 <context>
