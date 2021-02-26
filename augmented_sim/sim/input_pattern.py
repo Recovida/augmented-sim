@@ -22,11 +22,11 @@ class Pattern0(InputPattern):
 
     @classmethod
     def adapt_col_list(cls, cols: List[str]) -> List[str]:
-        raise cols[:]
+        return cols[:]
 
     @classmethod
     def adapt_row(cls, row: Dict) -> Dict:
-        raise row.copy()
+        return row.copy()
 
 
 class Pattern1(InputPattern):
@@ -66,4 +66,23 @@ class Pattern1(InputPattern):
         return row
 
 
-ALL_PATTERNS = {c.NAME: c for c in [Pattern0, Pattern1]}
+class Pattern2(InputPattern):
+
+    NAME = '02.2021'
+
+    @classmethod
+    def adapt_col_list(cls, cols: List[str]) -> List[str]:
+        cols = cols[:]
+        if 'CD_GEOCODI' in cols and 'CODBAIRES' not in cols:
+            cols.insert(cols.index('CD_GEOCODI') + 1, 'CODBAIRES')
+        return cols
+
+    @classmethod
+    def adapt_row(cls, row: Dict) -> Dict:
+        row = row.copy()
+        if 'CD_GEOCODI' in row and 'CODBAIRES' not in row:
+            row['CODBAIRES'] = str(row['CD_GEOCODI'])[7:9]
+        return row
+
+
+ALL_PATTERNS = {c.NAME: c for c in [Pattern0, Pattern1, Pattern2]}

@@ -24,7 +24,6 @@ class NeighbourhoodAugmenter(Augmenter):
         80: 2, 81: 1, 82: 1, 83: 3, 84: 1, 85: 2, 86: 3, 87: 2, 88: 2, 89: 3,
         90: 1, 91: 2, 92: 1, 93: 2, 94: 2, 95: 2, 96: 1
     }
-    # neighbourhood_income_names = {1: 'ALTA', 2: 'INTERMEDIARIA', 3: 'BAIXA'}
 
     @classmethod
     def neighbourhood_income(cls, neighbourhood: int) -> int:

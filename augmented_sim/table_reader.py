@@ -3,6 +3,7 @@
 
 import csv
 import dbfread
+import openpyxl
 
 from typing import Union, Optional, Iterator, Tuple, Dict
 
@@ -58,6 +59,16 @@ class TableReader:
                     parser = dbfread.DBF(file_name)
                     columns = parser.field_names[:]
                     denominator = parser.header.numrecords
+                elif file_name.lower().endswith('.xlsx'):
+                    format = 'XLSX'
+                    ws = openpyxl.load_workbook(
+                        filename=file_name, read_only=True).active
+                    columns = [str(c.value) for c in ws[1]]
+                    rows = ws.rows
+                    next(rows)
+                    parser = (dict(zip(columns, (c.value for c in row)))
+                              for row in rows)
+                    denominator = ws.max_row - 1
                 else:
                     msg = self.tr('unsupported-file').format(file_name)
                     raise TableReadingError(msg, file_name)
