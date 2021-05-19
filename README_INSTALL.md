@@ -15,7 +15,7 @@ Ao instalar, certifique-se de **deixar marcada** a
 na parte inferior do instalador.
 
 1. Faça
-[download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
+[download do conteúdo deste repositório](https://gitlab.com/recovida/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
 
 1. É possível instalar o programa ou executá-lo sem instalar:
   - Se preferir executar **da própria pasta**:
@@ -52,7 +52,7 @@ Se necessário, consulte a documentação para
   de pacotes de sua distribuição (`apt`, `apt-get`, `yum`, `dnf`, etc.).
 
 2. Faça
-  [download do conteúdo deste repositório](https://gitlab.com/projeto-fm-usp-mortalidade-sp/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
+  [download do conteúdo deste repositório](https://gitlab.com/recovida/augmented-sim/-/archive/master/mortalidadesp-master.zip) e descompacte-o.
   <br/><small>Obs.:  No Safari, é possível que a extração ocorra automaticamente.</small>
 
 3. Em um terminal, entre no diretório descompactado
