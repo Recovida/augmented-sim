@@ -8,9 +8,12 @@ e, a partir das informações disponíveis nas colunas já existentes,
 cria um único arquivo contendo todos os dados após o acréscimo de algumas
 colunas. Para instruções de instalação e uso, veja o arquivo
 [README_INSTALL.md](https://gitlab.com/recovida/augmented-sim/-/blob/master/README_INSTALL.md).
+<!-- 
 Para informações sobre o projeto do qual este
 programa faz parte, consulte o
 [repositório de índice](https://gitlab.com/recovida/index).
+// TODO: inserir link para site do Recovida, quando estiver disponível
+-->
 
 O programa salva um único arquivo no formato CSV (*comma-separated values*),
 que pode ser aberto por diversos programas que tratam de dados tabulados,
