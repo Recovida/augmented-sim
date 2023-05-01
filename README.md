@@ -235,7 +235,7 @@ estão presentes nos arquivos de entrada.
 </table>
 
 - `CIDBR`: indica o código da
-  [CID-BR-10](http://tabnet.saude.mg.gov.br/Notas_tecnicas/Mortalidade_CID-10_Lista_CID-BR.pdf)
+  [CID-BR-9](http://tabnet.saude.mg.gov.br/Notas_tecnicas/Mortalidade_CID-10_Lista_CID-BR.pdf)
    correspondente à causa básica da coluna `CAUSABAS`.
 
 - `DCOR`, `OUTCOR`, `AVC`, `GRIPE`, `PNEUMONIA`, `DPOCASMA`, `GPP`, `PERI`,
