@@ -199,7 +199,7 @@ class Ui_AboutDialog(object):
         self.retranslateUi(AboutDialog)
         self.buttonBox.rejected.connect(AboutDialog.close)
 
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         self.tabs_external_licences.setCurrentIndex(0)
 
 
