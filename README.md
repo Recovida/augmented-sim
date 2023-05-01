@@ -252,7 +252,7 @@ estão presentes nos arquivos de entrada.
     <tr>
       <th>CID-BR</th>
       <th>Coluna</th>
-      <th>Nome (segundo CID-BR-10)</th>
+      <th>Nome (segundo CID-BR-9)</th>
     </tr>
   </thead>
   <tbody>
